@@ -56,6 +56,15 @@ export const http = <T>(options: UniApp.RequestOptions, loading: boolean) => {
             // 响应成功
             success(res) {
                 uni.hideLoading();
+                if ((res.data as any).msg == '未认证') {
+                    uni.navigateTo({ url: '/pages/login/login' })
+                    uni.showToast({
+                        icon: 'none',
+                        title: '请先登录'
+                    })
+                    reject(res)
+                    return;
+                }
                 // 状态码 2xx, 后端返回code不为0
                 if ((res.data as any).code != 0 && res.statusCode >= 200 && res.statusCode < 300) {
                     // 2.1 提取核心数据 res.data
