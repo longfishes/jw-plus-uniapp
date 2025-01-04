@@ -27,11 +27,11 @@ export default {
         '4': ['大一', '大二', '大三', '大四']
       }
       return [
-        yearMapping[this.result.charAt(0)] || [],
+        yearMapping[this.result.charAt(0)] || ['大一', '大二', '大三', '大四', this.getMyYear() + 4, this.getMyYear() + 5],
         ['上', '下', '全']
       ]
     },
-    // 返回存储的 selectedIndex
+
     multiIndex() {
       return this.selectedIndex
     }
@@ -95,19 +95,16 @@ export default {
       this.togglePicker()
     },
     bindChange: function (e) {
-      this.selectedIndex = e.target.value // 修改存储的索引值
+      this.selectedIndex = e.target.value
     }
   },
   watch: {
-    // 监听 memberStore.profile.username 的变化
     'memberStore.profile.username': function () {
-      // 重新计算 selectedIndex
       this.updateSelectedIndex()
     }
   },
   created() {
     this.memberStore = useMemberStore()
-    // 在 created 钩子中初始化 selectedIndex
     this.updateSelectedIndex()
   },
   onShow() {
@@ -157,13 +154,13 @@ export default {
     <view>
       <uni-popup ref="pickerPop" background-color="#fff">
         <view class="popup-content">
-          <picker-view :value="multiIndex" @pickend="pickend" @pickstart="pickstart" @change="bindChange"
-            class="picker-view" indicator-style="height: 50px;" mask-style="padding: 10px 0">
+          <picker-view ref="pickerView" :immediate-change="true" :value="multiIndex" @pickend="pickend"
+            @pickstart="pickstart" @change="bindChange" class="picker-view" indicator-style="height: 50px;">
             <picker-view-column>
-              <view class="item" v-for="( item, index ) in  multiArray[0] " :key="index">{{ item }}</view>
+              <view class="item" v-for="(item, index) in multiArray[0]" :key="index">{{ item }}</view>
             </picker-view-column>
             <picker-view-column>
-              <view class="item" v-for="( item, index ) in  multiArray[1] " :key="index">{{ item }}</view>
+              <view class="item" v-for="(item, index) in multiArray[1]" :key="index">{{ item }}</view>
             </picker-view-column>
           </picker-view>
         </view>
