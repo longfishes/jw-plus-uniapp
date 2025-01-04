@@ -5,20 +5,20 @@ import { http } from '@/utils/http'
 export default {
   data() {
     return {
-      data: '',
+      data: [],
       gradeItem: {
         list: [],
         xfjd: ''
       },
-      selectedIndex: [0, 0] // 用于存储用户选择的索引
+      selectedIndex: [0, 0]
     }
   },
   computed: {
-    // 动态计算学年结果
+
     result() {
       return this.calcPrefer()
     },
-    // 动态生成 multiArray
+
     multiArray() {
       const yearMapping = {
         '1': ['大一'],
@@ -165,7 +165,7 @@ export default {
           </picker-view>
         </view>
         <view class="popUpBtn">
-          <button style="color: #2979ff;border-color: #2979ff" plain size="" @click="this.$refs.pickerPop.close();
+          <button style="color: #2979ff;border-color: #2979ff" plain @click="this.$refs.pickerPop.close();
       ">确定</button>
         </view>
       </uni-popup>
