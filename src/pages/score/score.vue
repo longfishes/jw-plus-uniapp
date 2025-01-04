@@ -89,6 +89,11 @@ export default {
       }
     },
     updateSelectedIndex() {
+      const username = this.memberStore.profile.username
+      if (!username || username.length < 4 || isNaN(parseInt(username.substring(0, 4)))) {
+        this.selectedIndex = [0, 0]
+        return;
+      }
       const newSelectedIndex = [this.result.charAt(0) - 1, this.result.charAt(1) - 1]
       this.selectedIndex = newSelectedIndex
     },
@@ -120,6 +125,7 @@ export default {
     },
     bindChange: function (e) {
       this.selectedIndex = e.target.value
+      this.scoreStore.setIndexes(this.selectedIndex)
       if (!this.scoreStore.gradeItem[e.target.value[0]][e.target.value[1]]) {
         this.gradeItem = { list: [], xfjd: '' }
         this.isQueried = false
@@ -137,11 +143,16 @@ export default {
     this.scoreStore = useScoreStore()
   },
   onShow() {
-    if (this.scoreStore.selectedIndexes.length == 2) {
+    if (this.scoreStore.selectedIndexes.length != 2) {
+      this.updateSelectedIndex()
+    } else {
+      this.selectedIndex = this.scoreStore.selectedIndexes
+    }
+
+    if (this.scoreStore.selectedIndexes.length == 2
+      && this.scoreStore.gradeItem[this.scoreStore.selectedIndexes[0]][this.scoreStore.selectedIndexes[1]]) {
       this.selectedIndex = this.scoreStore.selectedIndexes
       this.gradeItem = this.scoreStore.gradeItem[this.selectedIndex[0]][this.selectedIndex[1]]
-    } else {
-      this.updateSelectedIndex()
     }
   },
 }

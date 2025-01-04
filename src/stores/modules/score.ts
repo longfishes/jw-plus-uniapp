@@ -17,6 +17,10 @@ export const useScoreStore = defineStore(
             selectedIndexes.value = indexes
         }
 
+        const setIndexes = (indexes: Array<number>) => {
+            selectedIndexes.value = indexes
+        }
+
         const clear = () => {
             gradeItem.value = [[]]
             selectedIndexes.value = []
@@ -25,6 +29,7 @@ export const useScoreStore = defineStore(
         return {
             gradeItem,
             selectedIndexes,
+            setIndexes,
             set,
             clear,
         }
