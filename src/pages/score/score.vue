@@ -120,14 +120,12 @@ export default {
     },
     bindChange: function (e) {
       this.selectedIndex = e.target.value
-      if (this.scoreStore.selectedIndexes.length == 2
-        && this.scoreStore.selectedIndexes[0] == e.target.value[0]
-        && this.scoreStore.selectedIndexes[1] == e.target.value[1]) {
-        this.gradeItem = this.scoreStore.gradeItem
-        this.isQueried = true
-      } else {
+      if (!this.scoreStore.gradeItem[e.target.value[0]][e.target.value[1]]) {
         this.gradeItem = { list: [], xfjd: '' }
         this.isQueried = false
+      } else {
+        this.gradeItem = this.scoreStore.gradeItem[e.target.value[0]][e.target.value[1]]
+        this.isQueried = true
       }
     }
   },
@@ -141,7 +139,7 @@ export default {
   onShow() {
     if (this.scoreStore.selectedIndexes.length == 2) {
       this.selectedIndex = this.scoreStore.selectedIndexes
-      this.gradeItem = this.scoreStore.gradeItem
+      this.gradeItem = this.scoreStore.gradeItem[this.selectedIndex[0]][this.selectedIndex[1]]
     } else {
       this.updateSelectedIndex()
     }

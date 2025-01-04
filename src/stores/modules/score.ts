@@ -4,22 +4,21 @@ import { ref } from 'vue'
 interface GradeItem {
     list: Array<any>
     xfjd: string
-    selectedIndexex: Array<Number>
 }
 
 export const useScoreStore = defineStore(
     'score',
     () => {
-        const gradeItem = ref<GradeItem>({ list: [], xfjd: '', selectedIndexex: [] })
-        const selectedIndexes = ref<Array<Number>>([])
+        const gradeItem = ref<Array<Array<GradeItem>>>(Array.from({ length: 10 }, () => Array(3).fill(null)))
+        const selectedIndexes = ref<Array<number>>([])
 
-        const set = (dto: GradeItem, indexes: Array<Number>) => {
-            gradeItem.value = dto
+        const set = (dto: GradeItem, indexes: Array<number>) => {
+            gradeItem.value[indexes[0]][indexes[1]] = dto
             selectedIndexes.value = indexes
         }
 
         const clear = () => {
-            gradeItem.value = { list: [], xfjd: '', selectedIndexex: [] }
+            gradeItem.value = [[]]
             selectedIndexes.value = []
         }
 
