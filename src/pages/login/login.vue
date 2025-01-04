@@ -40,12 +40,10 @@ export default {
       uni.showToast({ title: '绑定成功' })
     },
     clearUsername() {
-      this.baseFormData.username = ''; // 清空用户名
-      this.isClearVisibleUsername = false; // 隐藏清除按钮
+      this.baseFormData.username = '';
     },
     clearPassword() {
-      this.baseFormData.password = ''; // 清空密码
-      this.isClearVisiblePassword = false; // 隐藏清除按钮
+      this.baseFormData.password = '';
     },
   }
 }
@@ -57,14 +55,14 @@ export default {
       <uni-forms label-position="left">
         <uni-forms-item>
           <view class="custom-input">
-            <span class="input-label">&nbsp;&nbsp;账号</span>&nbsp&nbsp&nbsp|&nbsp&nbsp&nbsp&nbsp;
+            <span class="input-label">&nbsp;&nbsp;账号</span>&nbsp&nbsp|&nbsp&nbsp&nbsp&nbsp;
             <input v-model="baseFormData.username" placeholder="请输入账号" />
             <span v-if="baseFormData.username" class="clear-btn" @click="clearUsername">×</span>
           </view>
         </uni-forms-item>
         <uni-forms-item>
           <view class="custom-input">
-            <span class="input-label">&nbsp;&nbsp;密码</span>&nbsp&nbsp&nbsp|&nbsp&nbsp&nbsp&nbsp;
+            <span class="input-label">&nbsp;&nbsp;密码</span>&nbsp&nbsp|&nbsp&nbsp&nbsp&nbsp;
             <input v-model="baseFormData.password" placeholder="请输入密码" type="password" />
             <span v-if="baseFormData.password" class="clear-btn" @click="clearPassword">×</span>
           </view>
