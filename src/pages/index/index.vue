@@ -2,63 +2,75 @@
 import { useMemberStore } from '@/stores'
 import { http } from '@/utils/http'
 
-const memberStore = useMemberStore()
-const myYear = memberStore.profile.username.substring(0, 4)
-
-// 学年分界线：11月
-// 上下半学期分界线：5月
-function calcPrefer() {
-  let curYear = -1
-  let index = -1
-
-  let month = new Date().getMonth() + 1
-  let year = new Date().getFullYear()
-
-  if (myYear == year) {
-    return '11'
-  }
-
-  if (month >= 11 || month < 5) {
-    if (month >= 11) {
-      return (year - myYear + 1).toString() + '1'
-    } else {
-      return (year - myYear).toString() + '1'
-    }
-  } else {
-    return (year - myYear).toString() + '2'
-  }
-}
-
-const result = calcPrefer()
-
-function getMultiArray() {
-  if (result.charAt(0) == '1') return ['大一']
-  if (result.charAt(0) == '2') return ['大一', '大二']
-  if (result.charAt(0) == '3') return ['大一', '大二', '大三']
-  if (result.charAt(0) == '4') return ['大一', '大二', '大三', '大四']
-}
-
-function getMultiIndex() {
-  return [result.charAt(0) - 1, result.charAt(1) - 1]
-}
-
 export default {
   data() {
     return {
       data: '',
-      multiArray: [
-        getMultiArray(),
-        ['上', '下', '全'],
-      ],
-      multiIndex: getMultiIndex(),
       gradeItem: {
         list: [],
         xfjd: ''
       },
+      selectedIndex: [0, 0] // 用于存储用户选择的索引
     }
   },
-  onReady() { },
+  computed: {
+    // 动态计算学年结果
+    result() {
+      return this.calcPrefer()
+    },
+    // 动态生成 multiArray
+    multiArray() {
+      const yearMapping = {
+        '1': ['大一'],
+        '2': ['大一', '大二'],
+        '3': ['大一', '大二', '大三'],
+        '4': ['大一', '大二', '大三', '大四']
+      }
+      return [
+        yearMapping[this.result.charAt(0)] || [],
+        ['上', '下', '全']
+      ]
+    },
+    // 返回存储的 selectedIndex
+    multiIndex() {
+      return this.selectedIndex
+    }
+  },
   methods: {
+    getMyYear() {
+      const currentYear = new Date().getFullYear()
+      const username = this.memberStore.profile.username
+
+      if (!username || username.length < 4 || isNaN(parseInt(username.substring(0, 4)))) {
+        return currentYear - 4
+      }
+
+      return parseInt(username.substring(0, 4))
+    },
+    calcPrefer() {
+      const myYear = this.getMyYear()
+      const month = new Date().getMonth() + 1
+      const year = new Date().getFullYear()
+
+      if (myYear === year) {
+        return '11'
+      }
+
+      if (month >= 11 || month < 5) {
+        if (month >= 11) {
+          return (year - myYear + 1).toString() + '1'
+        } else {
+          return (year - myYear).toString() + '1'
+        }
+      } else {
+        return (year - myYear).toString() + '2'
+      }
+    },
+    updateSelectedIndex() {
+      // 根据 result 重新设置 selectedIndex
+      const newSelectedIndex = [this.result.charAt(0) - 1, this.result.charAt(1) - 1]
+      this.selectedIndex = newSelectedIndex
+    },
     toggle(index) {
       this.data = this.gradeItem.list[index].details
       this.$refs.popup.open('bottom')
@@ -68,8 +80,8 @@ export default {
     },
     async query() {
       const index = this.multiIndex[1]
-      const xnm = parseInt(myYear) + this.multiIndex[0]
-      const xqm = index == 0 ? '3' : index == 1 ? '12' : ''
+      const xnm = parseInt(this.getMyYear()) + this.multiIndex[0]
+      const xqm = index === 0 ? '3' : index === 1 ? '12' : ''
 
       const res = await http({
         method: 'POST',
@@ -83,11 +95,27 @@ export default {
       this.togglePicker()
     },
     bindChange: function (e) {
-      this.multiIndex = e.target.value
+      this.selectedIndex = e.target.value // 修改存储的索引值
     }
-  }
+  },
+  watch: {
+    // 监听 memberStore.profile.username 的变化
+    'memberStore.profile.username': function () {
+      // 重新计算 selectedIndex
+      this.updateSelectedIndex()
+    }
+  },
+  created() {
+    this.memberStore = useMemberStore()
+    // 在 created 钩子中初始化 selectedIndex
+    this.updateSelectedIndex()
+  },
+  onShow() {
+    this.updateSelectedIndex()
+  },
 }
 </script>
+
 
 <template>
   <view class="index">
@@ -147,7 +175,6 @@ export default {
     </view>
 
   </view>
-
 </template>
 
 <style scoped lang="scss">
