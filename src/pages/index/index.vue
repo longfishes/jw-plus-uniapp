@@ -19,6 +19,10 @@ export default {
       return this.calcPrefer()
     },
 
+    truncatedData() {
+      return this.data.slice(0, this.data.length - 1);
+    },
+
     multiArray() {
       const yearMapping = {
         '1': ['大一'],
@@ -145,8 +149,14 @@ export default {
 
     <view>
       <uni-popup ref="popup" background-color="#fff">
-        <view class="popup-content">
-          {{ data }}
+        <view class="detail-popup-content">
+          <uni-table border stripe>
+            <uni-tr v-for="(item, index) in truncatedData" :key="index">
+              <uni-td align="center">{{ item.name }}&nbsp;({{ item.percent * 100 }}%)</uni-td>
+              <uni-td align="center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ item.score
+                }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</uni-td>
+            </uni-tr>
+          </uni-table>
         </view>
       </uni-popup>
     </view>
@@ -252,5 +262,9 @@ export default {
 .item {
   line-height: 100rpx;
   text-align: center;
+}
+
+.detail-popup-content {
+  padding: 20px;
 }
 </style>
