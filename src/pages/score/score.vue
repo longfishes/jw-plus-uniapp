@@ -6,6 +6,7 @@ export default {
   data() {
     return {
       data: [],
+      selectedName: '',
       gradeItem: {
         list: [],
         xfjd: ''
@@ -77,6 +78,7 @@ export default {
     },
     toggle(index) {
       this.data = this.gradeItem.list[index].details
+      this.selectedName = this.gradeItem.list[index].kcmc
       this.$refs.popup.open('bottom')
     },
     togglePicker() {
@@ -149,15 +151,17 @@ export default {
 
     <view>
       <uni-popup ref="popup" background-color="#fff">
-        <view class="detail-popup-content">
-          <uni-table border stripe>
-            <uni-tr v-for="(item, index) in truncatedData" :key="index">
-              <uni-td align="center">{{ item.name }}&nbsp;({{ item.percent * 100 }}%)</uni-td>
-              <uni-td align="center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ item.score
-                }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</uni-td>
-            </uni-tr>
-          </uni-table>
-        </view>
+        <uni-section :title="selectedName" type="line">
+          <view class="detail-popup-content">
+            <uni-table border stripe>
+              <uni-tr v-for="(item, index) in truncatedData" :key="index">
+                <uni-td align="center">{{ item.name }}&nbsp;({{ item.percent * 100 }}%)</uni-td>
+                <uni-td align="center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ item.score
+                  }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</uni-td>
+              </uni-tr>
+            </uni-table>
+          </view>
+        </uni-section>
       </uni-popup>
     </view>
 
