@@ -20,7 +20,7 @@ const onCleanTapped: any = () => {
 
 <template>
   <view class="my">
-    <view>会员信息：{{ memberStore.profile }}</view>
+    <view>{{ memberStore.profile }}</view>
     <button @tap="
       memberStore.setProfile({ username: 'test', password: 'test' })
       " size="mini" plain type="primary">

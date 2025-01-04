@@ -1,5 +1,6 @@
 <script>
 import { useMemberStore } from '@/stores'
+import { useScoreStore } from '@/stores'
 import { http } from '@/utils/http'
 
 function round(number, decimalPlaces) {
@@ -112,25 +113,38 @@ export default {
       res.data.xfjd = round(res.data.xfjd, 2)
       this.gradeItem = res.data
       this.isQueried = true
+      this.scoreStore.set(res.data, this.selectedIndex)
     },
     showPicker() {
       this.togglePicker()
     },
     bindChange: function (e) {
       this.selectedIndex = e.target.value
+      if (this.scoreStore.selectedIndexes.length == 2
+        && this.scoreStore.selectedIndexes[0] == e.target.value[0]
+        && this.scoreStore.selectedIndexes[1] == e.target.value[1]) {
+        this.gradeItem = this.scoreStore.gradeItem
+        this.isQueried = true
+      } else {
+        this.gradeItem = { list: [], xfjd: '' }
+        this.isQueried = false
+      }
     }
   },
   watch: {
-    'memberStore.profile.username': function () {
-      this.updateSelectedIndex()
-    }
+
   },
   created() {
     this.memberStore = useMemberStore()
-    this.updateSelectedIndex()
+    this.scoreStore = useScoreStore()
   },
   onShow() {
-    this.updateSelectedIndex()
+    if (this.scoreStore.selectedIndexes.length == 2) {
+      this.selectedIndex = this.scoreStore.selectedIndexes
+      this.gradeItem = this.scoreStore.gradeItem
+    } else {
+      this.updateSelectedIndex()
+    }
   },
 }
 </script>
