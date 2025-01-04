@@ -15,7 +15,7 @@ const httpInterceptor = {
         }
 
         // 请求超时时间 默认：60s
-        options.timeout = 60 * 1000
+        options.timeout = 30 * 1000
 
         // 请求头
         options.header = {

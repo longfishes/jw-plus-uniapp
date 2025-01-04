@@ -29,12 +29,23 @@ export default {
         '2': ['大一', '大二'],
         '3': ['大一', '大二', '大三'],
         '4': ['大一', '大二', '大三', '大四']
-      }
+      };
+
+      const yearKey = this.result.charAt(0);
+      const baseYear = this.getMyYear();
+      const additionalYears = parseInt(yearKey, 10);
+      const years = additionalYears <= 4
+        ? yearMapping[yearKey]
+        : yearMapping['4'].concat(
+          Array.from({ length: additionalYears - 4 }, (_, i) => baseYear + 4 + i)
+        );
+
       return [
-        yearMapping[this.result.charAt(0)] || ['大一', '大二', '大三', '大四', this.getMyYear() + 4, this.getMyYear() + 5],
+        years || ['大一', '大二', '大三', '大四'],
         ['上', '下', '全']
-      ]
+      ];
     },
+
 
     multiIndex() {
       return this.selectedIndex
