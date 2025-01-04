@@ -3,7 +3,7 @@
   "easycom": {
     "autoscan": true,
     "custom": {
-      // uni-ui 规则如下配置  
+      // uni-ui 规则如下配置
       "^uni-(.*)": "@dcloudio/uni-ui/lib/uni-$1/uni-$1.vue"
     }
   },
@@ -37,6 +37,12 @@
       "path": "pages/login/login",
       "style": {
         "navigationBarTitleText": "登录"
+      }
+    },
+    {
+      "path": "pages/exam/exam",
+      "style": {
+        "navigationBarTitleText": "考试日程"
       }
     }
   ],

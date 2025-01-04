@@ -2,6 +2,11 @@
 import { useMemberStore } from '@/stores'
 import { http } from '@/utils/http'
 
+function round(number, decimalPlaces) {
+  let factor = Math.pow(10, decimalPlaces);
+  return Math.round(number * factor) / factor;
+}
+
 export default {
   data() {
     return {
@@ -11,7 +16,8 @@ export default {
         list: [],
         xfjd: ''
       },
-      selectedIndex: [0, 0]
+      selectedIndex: [0, 0],
+      isQueried: false,
     }
   },
   computed: {
@@ -103,8 +109,9 @@ export default {
         url: '/grade/option',
         data: { 'xnm': xnm, 'xqm': xqm }
       }, true)
-
+      res.data.xfjd = round(res.data.xfjd, 2)
       this.gradeItem = res.data
+      this.isQueried = true
     },
     showPicker() {
       this.togglePicker()
@@ -136,6 +143,7 @@ export default {
       <view class="uni-input" @tap="showPicker">
         <span class="placeholder">&nbsp;&nbsp;学期</span>&nbsp&nbsp&nbsp|&nbsp&nbsp&nbsp&nbsp;
         <span class="content">{{ multiArray[0][multiIndex[0]] + ' ' + multiArray[1][multiIndex[1]] }}</span>
+        <span v-if="gradeItem.xfjd" style="font-weight: bold;">平均绩点&nbsp;&nbsp;{{ gradeItem.xfjd }}&nbsp;&nbsp;</span>
       </view>
     </view>
 
@@ -151,12 +159,16 @@ export default {
             @tap="toggle(index)" />
         </uni-list>
       </uni-section>
+
+      <view class="divider-container" v-else-if="isQueried">
+        <view class="divider-text">暂无更多数据</view>
+      </view>
+
     </view>
 
     <view class="divider-container" v-if="gradeItem.list[0]">
       <view class="divider-text">暂无更多数据</view>
     </view>
-
 
     <view>
       <uni-popup ref="popup" background-color="#fff">
