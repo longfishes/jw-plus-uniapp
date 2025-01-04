@@ -72,7 +72,6 @@ export default {
       }
     },
     updateSelectedIndex() {
-      // 根据 result 重新设置 selectedIndex
       const newSelectedIndex = [this.result.charAt(0) - 1, this.result.charAt(1) - 1]
       this.selectedIndex = newSelectedIndex
     },
