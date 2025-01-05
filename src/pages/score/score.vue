@@ -123,7 +123,7 @@ export default {
     showPicker() {
       this.togglePicker()
     },
-    bindChange: function (e) {
+    submitChange(e) {
       this.selectedIndex = e.target.value
       this.scoreStore.setIndexes(this.selectedIndex)
       if (!this.scoreStore.gradeItem[e.target.value[0]][e.target.value[1]]) {
@@ -133,6 +133,13 @@ export default {
         this.gradeItem = this.scoreStore.gradeItem[e.target.value[0]][e.target.value[1]]
         this.isQueried = true
       }
+    },
+    bindChange(e) {
+      this.unsubmitElement = e
+    },
+    submitBnclicked() {
+      this.submitChange(this.unsubmitElement)
+      this.$refs.pickerPop.close();
     }
   },
   watch: {
@@ -223,8 +230,7 @@ export default {
           </picker-view>
         </view>
         <view class="popUpBtn">
-          <button style="color: #2979ff;border-color: #2979ff" plain @click="this.$refs.pickerPop.close();
-      ">确定</button>
+          <button style="color: #2979ff;border-color: #2979ff" plain @click="submitBnclicked">确定</button>
         </view>
       </uni-popup>
     </view>
