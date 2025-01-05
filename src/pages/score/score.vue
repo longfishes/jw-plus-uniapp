@@ -18,7 +18,6 @@ export default {
         xfjd: ''
       },
       selectedIndex: [0, 0],
-      isQueried: false,
     }
   },
   computed: {
@@ -116,29 +115,36 @@ export default {
         data: { 'xnm': xnm, 'xqm': xqm }
       }, true)
       res.data.xfjd = round(res.data.xfjd, 2)
-      this.gradeItem = res.data
-      this.isQueried = true
+      this.gradeItem = { list: [], xfjd: '' }
+      setTimeout(() => {
+        this.gradeItem = res.data
+      }, 200);
       this.scoreStore.set(res.data, this.selectedIndex)
     },
     showPicker() {
       this.togglePicker()
     },
-    submitChange(e) {
-      this.selectedIndex = e.target.value
+    submitChange(value) {
+      this.selectedIndex = value
       this.scoreStore.setIndexes(this.selectedIndex)
-      if (!this.scoreStore.gradeItem[e.target.value[0]][e.target.value[1]]) {
+      if (!this.scoreStore.gradeItem[value[0]][value[1]]) {
         this.gradeItem = { list: [], xfjd: '' }
-        this.isQueried = false
       } else {
-        this.gradeItem = this.scoreStore.gradeItem[e.target.value[0]][e.target.value[1]]
-        this.isQueried = true
+        this.gradeItem = { list: [], xfjd: '' }
+        setTimeout(() => {
+          this.gradeItem = this.scoreStore.gradeItem[value[0]][value[1]]
+        }, 200);
       }
     },
     bindChange(e) {
       this.unsubmitElement = e
     },
     submitBnclicked() {
-      this.submitChange(this.unsubmitElement)
+      if (!this.unsubmitElement) {
+        this.submitChange(this.selectedIndex)
+      } else {
+        this.submitChange(this.unsubmitElement.target.value)
+      }
       this.$refs.pickerPop.close();
     }
   },
@@ -181,24 +187,24 @@ export default {
       <button style="color: #2979ff;border-color: #2979ff" plain size="" @click="query()">查询</button>
     </view>
 
-    <view class="list">
-      <uni-section v-if="gradeItem.list[0]">
-        <uni-list>
-          <uni-list-item v-for="(item, index) in gradeItem.list" :key="index" :title="item.kcmc"
-            :note="item.xf + '学分 · ' + item.js + (item.khfs == null ? '' : (' · ' + item.khfs))" :rightText="item.cj"
-            @tap="toggle(index)" />
-        </uni-list>
-      </uni-section>
 
-      <view class="divider-container" v-else-if="isQueried">
+    <view class="list">
+      <uni-transition ref="ani" :mode-class="['fade', 'slide-right']" :show="gradeItem.list[0]">
+        <uni-section v-if="gradeItem.list[0]">
+          <uni-list>
+            <uni-list-item v-for="(item, index) in gradeItem.list" :key="index" :title="item.kcmc"
+              :note="item.xf + '学分 · ' + item.js + (item.khfs == null ? '' : (' · ' + item.khfs))" :rightText="item.cj"
+              @tap="toggle(index)" />
+          </uni-list>
+        </uni-section>
+      </uni-transition>
+    </view>
+
+    <uni-transition ref="ani" :mode-class="['fade', 'slide-right']" :show="gradeItem.list[0]">
+      <view class="divider-container" v-if="gradeItem.list[0]">
         <view class="divider-text">暂无更多数据</view>
       </view>
-
-    </view>
-
-    <view class="divider-container" v-if="gradeItem.list[0]">
-      <view class="divider-text">暂无更多数据</view>
-    </view>
+    </uni-transition>
 
     <view>
       <uni-popup ref="popup" background-color="#fff">
