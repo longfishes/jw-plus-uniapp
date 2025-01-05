@@ -252,7 +252,7 @@ export default {
 }
 
 .popUpBtn {
-  margin: 50rpx;
+  padding: 50rpx;
 }
 
 .query-picker {
