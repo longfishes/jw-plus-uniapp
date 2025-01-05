@@ -327,4 +327,8 @@ export default {
 .detail-popup-content {
   padding: 20px;
 }
+
+::v-deep {
+  overflow-x: hidden;
+}
 </style>
