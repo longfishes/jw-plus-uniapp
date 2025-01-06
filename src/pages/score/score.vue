@@ -207,7 +207,7 @@ export default {
     </uni-transition>
 
     <view>
-      <uni-popup ref="popup" background-color="#fff">
+      <uni-popup ref="popup" background-color="#fff" :safeArea="false">
         <uni-section :title="selectedName" type="line">
           <view class="detail-popup-content">
             <uni-table border stripe>
@@ -219,11 +219,12 @@ export default {
             </uni-table>
           </view>
         </uni-section>
+        <view style="padding: 25rpx;"></view>
       </uni-popup>
     </view>
 
     <view>
-      <uni-popup ref="pickerPop" background-color="#fff">
+      <uni-popup ref="pickerPop" background-color="#fff" :safe-area="false">
         <view class="popup-content">
           <picker-view ref="pickerView" :immediate-change="true" :value="multiIndex" @pickend="pickend"
             @pickstart="pickstart" @change="bindChange" class="picker-view" indicator-style="height: 50px;">
@@ -252,7 +253,7 @@ export default {
 }
 
 .popUpBtn {
-  padding: 50rpx;
+  padding: 50rpx 50rpx 100rpx 50rpx;
 }
 
 .query-picker {
