@@ -11,6 +11,7 @@ function round(number, decimalPlaces) {
 export default {
   data() {
     return {
+      scollable: true,
       data: [],
       selectedName: '',
       gradeItem: {
@@ -58,6 +59,9 @@ export default {
     }
   },
   methods: {
+    popChange(e) {
+      this.scollable = !e.show
+    },
     getMyYear() {
       const currentYear = new Date().getFullYear()
       const username = this.memberStore.profile.username
@@ -173,6 +177,7 @@ export default {
 
 
 <template>
+  <page-meta :page-style="'overflow:' + (scollable ? 'visible' : 'hidden')"></page-meta>
   <view class="index">
 
     <view class="query-picker">
@@ -207,7 +212,7 @@ export default {
     </uni-transition>
 
     <view>
-      <uni-popup ref="popup" background-color="#fff" :safeArea="false">
+      <uni-popup ref="popup" background-color="#fff" :safeArea="false" @change="popChange">
         <uni-section :title="selectedName" type="line">
           <view class="detail-popup-content">
             <uni-table border stripe>
@@ -224,7 +229,7 @@ export default {
     </view>
 
     <view>
-      <uni-popup ref="pickerPop" background-color="#fff" :safe-area="false">
+      <uni-popup ref="pickerPop" background-color="#fff" :safe-area="false" @change="popChange">
         <view class="popup-content">
           <picker-view ref="pickerView" :immediate-change="true" :value="multiIndex" @pickend="pickend"
             @pickstart="pickstart" @change="bindChange" class="picker-view" indicator-style="height: 50px;">
