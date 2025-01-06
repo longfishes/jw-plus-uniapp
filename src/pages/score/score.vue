@@ -130,6 +130,10 @@ export default {
       this.togglePicker()
     },
     submitChange(value) {
+      if (!this.multiArray[0][value[0]] || !this.multiArray[1][value[1]]) {
+        value = this.selectedIndex
+      }
+
       this.selectedIndex = value
       this.scoreStore.setIndexes(this.selectedIndex)
       if (!this.scoreStore.gradeItem[value[0]][value[1]]) {
@@ -171,6 +175,11 @@ export default {
       && this.scoreStore.gradeItem[this.scoreStore.selectedIndexes[0]][this.scoreStore.selectedIndexes[1]]) {
       this.selectedIndex = this.scoreStore.selectedIndexes
       this.gradeItem = this.scoreStore.gradeItem[this.selectedIndex[0]][this.selectedIndex[1]]
+    }
+
+    if (!this.multiArray[0][this.multiIndex[0]] || !this.multiArray[1][this.multiIndex[1]]) {
+      this.updateSelectedIndex()
+      this.scoreStore.selectedIndexes = this.selectedIndex
     }
   },
 }
