@@ -3,9 +3,8 @@ import { useMemberStore } from '@/stores'
 import { useScoreStore } from '@/stores'
 import { http } from '@/utils/http'
 
-function round(number, decimalPlaces) {
-  let factor = Math.pow(10, decimalPlaces);
-  return Math.round(number * factor) / factor;
+function round(number) {
+  return (Math.round(number * 100) / 100).toFixed(2);
 }
 
 export default {
@@ -118,7 +117,7 @@ export default {
         url: '/grade/option',
         data: { 'xnm': xnm, 'xqm': xqm }
       }, true)
-      res.data.xfjd = round(res.data.xfjd, 2)
+      res.data.xfjd = round(res.data.xfjd)
       this.gradeItem = { list: [], xfjd: '' }
       setTimeout(() => {
         this.gradeItem = res.data
