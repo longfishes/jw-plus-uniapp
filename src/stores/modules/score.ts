@@ -69,7 +69,7 @@ export const useScoreStore = defineStore(
                 // 合并数组
                 const combinedArray = [
                     ...dto.list,
-                    ...(gradeItem?.value?.[indexes[0]]?.[indexes[1]]?.list ?? [])
+                    ...(gradeItem?.value?.[indexes[0]]?.[2]?.list ?? [])
                 ]
                 // 去重
                 const allList = combinedArray.reduce((acc, item) => {
