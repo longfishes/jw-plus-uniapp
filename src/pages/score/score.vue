@@ -117,12 +117,14 @@ export default {
         url: '/grade/option',
         data: { 'xnm': xnm, 'xqm': xqm }
       }, true)
-      res.data.xfjd = round(res.data.xfjd)
-      this.gradeItem = { list: [], xfjd: '' }
-      setTimeout(() => {
-        this.gradeItem = res.data
-      }, 200);
-      this.scoreStore.set(res.data, this.selectedIndex)
+      if (res.data.list.length != 0) {
+        res.data.xfjd = round(res.data.xfjd)
+        this.gradeItem = { list: [], xfjd: '' }
+        setTimeout(() => {
+          this.gradeItem = res.data
+        }, 200);
+        this.scoreStore.set(res.data, this.selectedIndex)
+      }
     },
     showPicker() {
       this.togglePicker()
