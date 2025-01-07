@@ -12,6 +12,8 @@ export default {
         username: memberStore.profile.username,
         password: memberStore.profile.password,
       },
+      isFocused: false,
+      isFocused2: false,
     }
   },
   methods: {
@@ -58,16 +60,18 @@ export default {
     <view class="form">
       <uni-forms label-position="left">
         <uni-forms-item>
-          <view class="custom-input">
+          <view class="custom-input" :class="{ 'focused': isFocused }" @tap="isFocused = true">
             <span class="input-label">&nbsp;&nbsp;账号</span>&nbsp&nbsp|&nbsp&nbsp&nbsp&nbsp;
-            <input v-model="baseFormData.username" placeholder="请输入账号" />
+            <input ref="usernameInput" v-model="baseFormData.username" placeholder="请输入账号" @focus="isFocused = true"
+              @blur="isFocused = false" :focus="isFocused" />
             <span v-if="baseFormData.username" class="clear-btn" @click="clearUsername">×</span>
           </view>
         </uni-forms-item>
         <uni-forms-item>
-          <view class="custom-input">
+          <view class="custom-input" :class="{ 'focused': isFocused2 }" @tap="isFocused2 = true">
             <span class="input-label">&nbsp;&nbsp;密码</span>&nbsp&nbsp|&nbsp&nbsp&nbsp&nbsp;
-            <input v-model="baseFormData.password" placeholder="请输入密码" type="password" />
+            <input ref="passwordInput" v-model="baseFormData.password" placeholder="请输入密码" type="password"
+              @focus="isFocused2 = true" @blur="isFocused2 = false" :focus="isFocused2" />
             <span v-if="baseFormData.password" class="clear-btn" @click="clearPassword">×</span>
           </view>
         </uni-forms-item>
@@ -97,6 +101,12 @@ export default {
   width: 100%;
   box-sizing: border-box;
   position: relative;
+  transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+
+.custom-input.focused {
+  border: 1px solid #2979ff;
+  box-shadow: 0 0 5px rgba(41, 121, 255, 0.5);
 }
 
 .input-label {
@@ -134,5 +144,9 @@ export default {
 
 .clear-btn:hover {
   color: #fd0000;
+}
+
+::v-deep {
+  overflow: hidden;
 }
 </style>
