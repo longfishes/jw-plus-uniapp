@@ -8,7 +8,7 @@ const getData: any = async () => {
   const res = await http({
     method: 'GET',
     url: '/member/profile',
-  })
+  }, false)
   console.log(res)
 }
 
@@ -16,14 +16,19 @@ const onCleanTapped: any = () => {
   memberStore.clearProfile()
 }
 
+const onSaveTapped: any = () => {
+  uni.showToast({
+    icon: 'none',
+    title: '保存'
+  })
+}
+
 </script>
 
 <template>
   <view class="my">
     <view>{{ memberStore.profile }}</view>
-    <button @tap="
-      memberStore.setProfile({ username: 'test', password: 'test' })
-      " size="mini" plain type="primary">
+    <button @tap="onSaveTapped()" size="mini" plain type="primary">
       保存用户信息
 
     </button>

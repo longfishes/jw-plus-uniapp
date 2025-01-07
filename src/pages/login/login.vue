@@ -1,8 +1,9 @@
 <script>
-import { useMemberStore } from '@/stores'
+import { useMemberStore, useScoreStore } from '@/stores'
 import { http } from '@/utils/http'
 
 const memberStore = useMemberStore()
+const scoreStore = useScoreStore()
 
 export default {
   data() {
@@ -35,6 +36,9 @@ export default {
         data: this.baseFormData
       }, true)
 
+      if (this.baseFormData.username != memberStore.profile.username) {
+        scoreStore.clear()
+      }
       memberStore.setProfile({ username: this.baseFormData.username, password: this.baseFormData.password, token: res.data })
       uni.navigateBack({})
       uni.showToast({ title: '绑定成功' })

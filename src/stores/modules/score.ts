@@ -91,7 +91,7 @@ export const useScoreStore = defineStore(
         }
 
         const clear = () => {
-            gradeItem.value = [[]]
+            gradeItem.value = Array.from({ length: 10 }, () => Array(3).fill(null))
             selectedIndexes.value = []
         }
 
