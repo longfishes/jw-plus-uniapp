@@ -60,7 +60,7 @@ export default {
     <view class="form">
       <uni-forms label-position="left">
         <uni-forms-item>
-          <view class="custom-input" :class="{ 'focused': isFocused }" @tap="isFocused = !isFocused">
+          <view class="custom-input" :class="{ 'focused': isFocused }" @tap="isFocused = true; isFocused2 = false">
             <span class="input-label">&nbsp;&nbsp;账号</span>&nbsp&nbsp|&nbsp&nbsp&nbsp&nbsp;
             <input ref="usernameInput" v-model="baseFormData.username" placeholder="请输入账号" @focus="isFocused = true"
               @blur="isFocused = false" :focus="isFocused" />
@@ -68,7 +68,7 @@ export default {
           </view>
         </uni-forms-item>
         <uni-forms-item>
-          <view class="custom-input" :class="{ 'focused': isFocused2 }" @tap="isFocused2 = !isFocused2">
+          <view class="custom-input" :class="{ 'focused': isFocused2 }" @tap="isFocused2 = true; isFocused = false">
             <span class="input-label">&nbsp;&nbsp;密码</span>&nbsp&nbsp|&nbsp&nbsp&nbsp&nbsp;
             <input ref="passwordInput" v-model="baseFormData.password" placeholder="请输入密码" type="password"
               @focus="isFocused2 = true" @blur="isFocused2 = false" :focus="isFocused2" />
