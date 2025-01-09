@@ -2,12 +2,16 @@
 import { useMemberStore } from '@/stores'
 import { useScoreStore } from '@/stores'
 import { http } from '@/utils/http'
+import GradeList from '@/components/GradeList.vue';
 
 function round(number) {
   return (Math.round(number * 100) / 100).toFixed(2);
 }
 
 export default {
+  components: {
+    GradeList
+  },
   data() {
     return {
       scollable: true,
@@ -202,20 +206,17 @@ export default {
       <button style="color: #2979ff;border-color: #2979ff" plain size="" @click="query()">查询</button>
     </view>
 
-
     <view class="list">
-      <uni-transition ref="ani" :mode-class="['fade', 'slide-right']" :show="gradeItem.list[0]">
+      <uni-transition ref="ani" :mode-class="['fade', 'slide-right']" :show="gradeItem.list[0] != undefined">
         <uni-section v-if="gradeItem.list[0]">
-          <uni-list>
-            <uni-list-item v-for="(item, index) in gradeItem.list" :key="index" :title="item.kcmc"
-              :note="item.xf + '学分 · ' + item.js + (item.khfs == null ? '' : (' · ' + item.khfs))" :rightText="item.cj"
-              @tap="toggle(index)" />
-          </uni-list>
+          <GradeList v-for="(item, index) in gradeItem.list" :key="index" :title="item.kcmc"
+            :note="item.xf + '学分 · ' + item.js + (item.khfs == null ? '' : (' · ' + item.khfs))" :rightText="item.cj"
+            :rightNote="item.jd" @tap="toggle(index)" />
         </uni-section>
       </uni-transition>
     </view>
 
-    <uni-transition ref="ani" :mode-class="['fade', 'slide-right']" :show="gradeItem.list[0]">
+    <uni-transition ref="ani" :mode-class="['fade', 'slide-right']" :show="gradeItem.list[0] != undefined">
       <view class="divider-container" v-if="gradeItem.list[0]">
         <view class="divider-text">暂无更多数据</view>
       </view>
