@@ -67,10 +67,18 @@ export const useScoreStore = defineStore(
 
             } else { // 查询上半年或下半年
                 // 合并数组
-                const combinedArray = [
-                    ...dto.list,
-                    ...(gradeItem?.value?.[indexes[0]]?.[2]?.list ?? [])
-                ]
+                let combinedArray
+                if (indexes[1] == 0) { // 上半年
+                    combinedArray = [
+                        ...dto.list,
+                        ...(gradeItem?.value?.[indexes[0]]?.[2]?.list ?? [])
+                    ]
+                } else { // 下半年
+                    combinedArray = [
+                        ...(gradeItem?.value?.[indexes[0]]?.[2]?.list ?? []),
+                        ...dto.list
+                    ]
+                }
                 // 去重
                 const allList = combinedArray.reduce((acc, item) => {
                     if (!acc.some((existingItem: any) => existingItem.kcmc === item.kcmc)) {

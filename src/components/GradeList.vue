@@ -1,7 +1,7 @@
 <template>
-    <div class="grade-list-item" :style="{ borderColor: color }">
+    <div class="grade-list-item" :style="{ borderColor: color, backgroundColor: bg }">
         <div class="left-content">
-            <div class="kcmc">{{ kcmc }}</div>
+            <div class="kcmc" :style="{ color: textColor }">{{ kcmc }}</div>
             <div class="message">{{ message }}</div>
         </div>
         <div class="right-content">
@@ -34,9 +34,17 @@ export default {
     },
     computed: {
         color() {
-            if ((this.cj) >= 90 || this.cj == '优秀') return '#19be6b';
+            if (this.cj >= 90 || this.cj == '优秀') return '#19be6b';
             else if (this.cj >= 60 || this.cj == '良好') return '#2979ff';
             else return '#fa5151';
+        },
+        bg() {
+            if (this.jd < 1) return '#fde2e2'
+            else return ''
+        },
+        textColor() {
+            if (this.jd < 1) return '#fa5151'
+            else return 'black'
         }
     }
 }

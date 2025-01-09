@@ -210,8 +210,8 @@ export default {
       <uni-transition ref="ani" :mode-class="['fade', 'slide-right']" :show="gradeItem.list[0] != undefined">
         <uni-section v-if="gradeItem.list[0]">
           <GradeList v-for="(item, index) in gradeItem.list" :key="index" :kcmc="item.kcmc"
-            :message="item.xf + '学分 · ' + item.js + (item.khfs == null ? '' : (' · ' + item.khfs))" :cj="item.cj"
-            :jd="item.jd" @tap="toggle(index)" />
+            :message="item.kcxzmc + ' · ' + item.xf + '学分 · ' + item.js + (item.khfs == null ? '' : (' · ' + item.khfs))"
+            :cj="item.cj" :jd="item.jd" @tap="toggle(index)" />
         </uni-section>
       </uni-transition>
     </view>
