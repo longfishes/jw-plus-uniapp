@@ -52,36 +52,18 @@ export default {
     clearPassword() {
       this.baseFormData.password = '';
     },
-    runAni() {
-      // 初始化动画状态（确保动画从视图外开始）
-      this.$refs.ani.step({
-        translateY: '750rpx',
-        opacity: 0
-      }, { duration: 1 }); // 确保初始状态设置完成
-
-      // 向上移动并逐渐显示
-      this.$refs.ani.step({
-        translateY: '0',
-        opacity: 1
-      }, {
-        timingFunction: 'ease-out',
-        duration: 1000
-      });
-
-      // 运行动画
-      this.$refs.ani.run();
-    },
   },
   onShow() {
     setTimeout(() => {
-      this.runAni()
+      this.show = true
     }, 300);
   },
 }
 </script>
 
 <template>
-  <uni-transition ref="ani" custom-class="transition" :show="true">
+  <uni-transition ref="ani" custom-class="transition" :mode-class="['fade', 'slide-bottom']" :show="show"
+    :duration="1000">
     <uni-section title="绑定教务系统" type="line">
       <view class="form">
         <uni-forms label-position="left">
