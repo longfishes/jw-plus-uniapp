@@ -1,26 +1,19 @@
 <script setup lang="ts">
-import { useMemberStore } from '@/stores'
-import { http } from '@/utils/http'
+import { useMemberStore, useScoreStore } from '@/stores'
 
 const memberStore = useMemberStore()
+const scoreStore = useScoreStore()
 
-const getData: any = async () => {
-  const res = await http({
-    method: 'GET',
-    url: '/member/profile',
-  }, false)
-  console.log(res)
+const clearData: any = () => {
+  scoreStore.clear()
 }
 
 const onCleanTapped: any = () => {
   memberStore.clearProfile()
 }
 
-const onSaveTapped: any = () => {
-  uni.showToast({
-    icon: 'none',
-    title: '保存'
-  })
+const toLogin: any = () => {
+  uni.navigateTo({ url: '/pages/login/login' })
 }
 
 </script>
@@ -28,12 +21,12 @@ const onSaveTapped: any = () => {
 <template>
   <view class="my">
     <view>{{ memberStore.profile }}</view>
-    <button @tap="onSaveTapped()" size="mini" plain type="primary">
-      保存用户信息
+    <button @tap="toLogin()" size="mini" plain type="primary">
+      跳转登录
 
     </button>
     <button @tap="onCleanTapped()" size="mini" plain type="warn">清理用户信息</button>
-    <button @tap="getData()" size="mini" plain type="primary">测试请求</button>
+    <button @tap="clearData()" size="mini" plain type="primary">清理缓存</button>
   </view>
 </template>
 

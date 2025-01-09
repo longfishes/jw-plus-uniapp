@@ -14,6 +14,7 @@ export default {
       },
       isFocused: false,
       isFocused2: false,
+      show: false,
     }
   },
   methods: {
@@ -51,35 +52,61 @@ export default {
     clearPassword() {
       this.baseFormData.password = '';
     },
-  }
+    runAni() {
+      // 初始化动画状态（确保动画从视图外开始）
+      this.$refs.ani.step({
+        translateY: '750rpx',
+        opacity: 0
+      }, { duration: 1 }); // 确保初始状态设置完成
+
+      // 向上移动并逐渐显示
+      this.$refs.ani.step({
+        translateY: '0',
+        opacity: 1
+      }, {
+        timingFunction: 'ease-out',
+        duration: 1000
+      });
+
+      // 运行动画
+      this.$refs.ani.run();
+    },
+  },
+  onShow() {
+    setTimeout(() => {
+      this.runAni()
+    }, 300);
+  },
 }
 </script>
 
 <template>
-  <uni-section title="绑定教务系统" type="line">
-    <view class="form">
-      <uni-forms label-position="left">
-        <uni-forms-item>
-          <view class="custom-input" :class="{ 'focused': isFocused }">
-            <span class="input-label">&nbsp;&nbsp;账号</span>&nbsp&nbsp|&nbsp&nbsp&nbsp&nbsp;
-            <input ref="usernameInput" v-model="baseFormData.username" placeholder="请输入账号" @focus="isFocused = true"
-              @blur="isFocused = false" />
-            <span v-if="baseFormData.username" class="clear-btn" @click="clearUsername">×</span>
-          </view>
-        </uni-forms-item>
-        <uni-forms-item>
-          <view class="custom-input" :class="{ 'focused': isFocused2 }">
-            <span class="input-label">&nbsp;&nbsp;密码</span>&nbsp&nbsp|&nbsp&nbsp&nbsp&nbsp;
-            <input ref="passwordInput" v-model="baseFormData.password" placeholder="请输入密码" type="password"
-              @focus="isFocused2 = true" @blur="isFocused2 = false" />
-            <span v-if="baseFormData.password" class="clear-btn" @click="clearPassword">×</span>
-          </view>
-        </uni-forms-item>
-      </uni-forms>
-      <button style="margin-top: 60rpx; color: #2979ff; border-color: #2979ff" plain size=""
-        @click="submit()">保存</button>
-    </view>
-  </uni-section>
+  <uni-transition ref="ani" custom-class="transition" :show="true">
+    <uni-section title="绑定教务系统" type="line">
+      <view class="form">
+        <uni-forms label-position="left">
+          <uni-forms-item>
+            <view class="custom-input" :class="{ 'focused': isFocused }">
+              <span class="input-label">&nbsp;&nbsp;账号</span>&nbsp&nbsp|&nbsp&nbsp&nbsp&nbsp;
+              <input ref="usernameInput" v-model="baseFormData.username" placeholder="请输入账号" @focus="isFocused = true"
+                @blur="isFocused = false" />
+              <span v-if="baseFormData.username" class="clear-btn" @click="clearUsername">×</span>
+            </view>
+          </uni-forms-item>
+          <uni-forms-item>
+            <view class="custom-input" :class="{ 'focused': isFocused2 }">
+              <span class="input-label">&nbsp;&nbsp;密码</span>&nbsp&nbsp|&nbsp&nbsp&nbsp&nbsp;
+              <input ref="passwordInput" v-model="baseFormData.password" placeholder="请输入密码" type="password"
+                @focus="isFocused2 = true" @blur="isFocused2 = false" />
+              <span v-if="baseFormData.password" class="clear-btn" @click="clearPassword">×</span>
+            </view>
+          </uni-forms-item>
+        </uni-forms>
+        <button style="margin-top: 60rpx; color: #2979ff; border-color: #2979ff" plain size=""
+          @click="submit()">保存</button>
+      </view>
+    </uni-section>
+  </uni-transition>
 </template>
 
 <style scoped lang="scss">
