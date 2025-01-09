@@ -1,12 +1,12 @@
 <template>
     <div class="grade-list-item" :style="{ borderColor: color }">
         <div class="left-content">
-            <div class="title">{{ title }}</div>
-            <div class="note">{{ note }}</div>
+            <div class="kcmc">{{ kcmc }}</div>
+            <div class="message">{{ message }}</div>
         </div>
         <div class="right-content">
-            <div class="right-text" :style="{ color: color }">{{ rightText }}</div>
-            <div class="right-note">绩点 {{ rightNote }}</div>
+            <div class="cj" :style="{ color: color }">{{ cj }}</div>
+            <div class="jd">绩点 {{ jd }}</div>
         </div>
     </div>
 </template>
@@ -15,27 +15,27 @@
 export default {
     name: "GradeList",
     props: {
-        title: {
+        kcmc: {
             type: String,
             required: true
         },
-        note: {
+        message: {
             type: String,
             required: true
         },
-        rightText: {
+        cj: {
             type: String,
             required: true
         },
-        rightNote: {
+        jd: {
             type: String,
             required: true
         }
     },
     computed: {
         color() {
-            if ((this.rightText) >= 90 || this.rightText == '优秀') return '#19be6b';
-            else if (this.rightText >= 60 || this.rightText == '良好') return '#2979ff';
+            if ((this.cj) >= 90 || this.cj == '优秀') return '#19be6b';
+            else if (this.cj >= 60 || this.cj == '良好') return '#2979ff';
             else return '#fa5151';
         }
     }
@@ -59,13 +59,13 @@ export default {
     align-items: flex-start;
 }
 
-.title {
+.kcmc {
     font-size: 20px;
     color: black;
     text-align: left;
 }
 
-.note {
+.message {
     font-size: 12px;
     color: gray;
     text-align: left;
@@ -78,13 +78,13 @@ export default {
     align-items: flex-end;
 }
 
-.right-text {
+.cj {
     font-size: 24px;
     font-weight: 600;
     text-align: center;
 }
 
-.right-note {
+.jd {
     font-size: 12px;
     color: gray;
     margin-top: 2px;

@@ -209,9 +209,9 @@ export default {
     <view class="list">
       <uni-transition ref="ani" :mode-class="['fade', 'slide-right']" :show="gradeItem.list[0] != undefined">
         <uni-section v-if="gradeItem.list[0]">
-          <GradeList v-for="(item, index) in gradeItem.list" :key="index" :title="item.kcmc"
-            :note="item.xf + '学分 · ' + item.js + (item.khfs == null ? '' : (' · ' + item.khfs))" :rightText="item.cj"
-            :rightNote="item.jd" @tap="toggle(index)" />
+          <GradeList v-for="(item, index) in gradeItem.list" :key="index" :kcmc="item.kcmc"
+            :message="item.xf + '学分 · ' + item.js + (item.khfs == null ? '' : (' · ' + item.khfs))" :cj="item.cj"
+            :jd="item.jd" @tap="toggle(index)" />
         </uni-section>
       </uni-transition>
     </view>
