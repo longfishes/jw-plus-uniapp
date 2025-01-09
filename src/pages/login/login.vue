@@ -58,6 +58,7 @@ export default {
 </script>
 
 <template>
+  <page-meta :page-style="'overflow:hidden'"></page-meta>
   <uni-section title="绑定教务系统" type="line">
     <view class="form">
       <uni-forms label-position="left">
@@ -146,9 +147,5 @@ export default {
 
 .clear-btn:hover {
   color: #fd0000;
-}
-
-::v-deep {
-  overflow: hidden;
 }
 </style>
