@@ -36,15 +36,15 @@ export default {
         color() {
             if (this.cj >= 90 || this.cj == '优秀') return '#19be6b';
             else if (this.cj >= 60 || this.cj == '良好') return '#2979ff';
-            else return '#fa5151';
+            return '#fa5151';
         },
         bg() {
             if (this.jd < 1) return '#fde2e2'
-            else return ''
+            return ''
         },
         textColor() {
             if (this.jd < 1) return '#fa5151'
-            else return 'black'
+            return 'black'
         }
     }
 }
