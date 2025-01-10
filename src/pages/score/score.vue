@@ -130,18 +130,18 @@ export default {
         const list1 = res.data.list;
         let list2 = this.scoreStore.gradeItem?.[this.selectedIndex[0]]?.[this.selectedIndex[1]]?.list;
 
-        // 持久化
-        this.scoreStore.set(res.data, this.selectedIndex)
-
         // 标记新出成绩字段
         if (!list2) list2 = []
         list1.forEach(item1 => {
-          const matchedItem = list2.find(item2 => item1.kcmc === item2.kcmc);
+          const matchedItem = list2.find(item2 => item1.kcmc == item2.kcmc);
           if (!matchedItem || matchedItem.isNew) {
             item1.isNew = true
           }
         });
         res.data.list = list1
+
+        // 持久化
+        this.scoreStore.set(res.data, this.selectedIndex)
 
         // 渲染
         setTimeout(() => {
