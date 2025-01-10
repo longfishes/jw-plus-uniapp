@@ -1,14 +1,17 @@
 <template>
-    <div class="grade-list-item" :style="{ borderColor: color, backgroundColor: bg }">
-        <div class="left-content">
-            <div class="kcmc" :style="{ color: textColor }">{{ kcmc }}</div>
-            <div class="message">{{ message }}</div>
-        </div>
-        <div class="right-content">
-            <div class="cj" :style="{ color: color }">{{ cj }}</div>
-            <div class="jd">绩点 {{ jd }}</div>
-        </div>
-    </div>
+    <view class="grade-list-item" :style="{ borderColor: color, backgroundColor: bg }">
+        <view class="left-content">
+            <uni-badge text="新" absolute="rightTop" size="small" :offset="[1, 1]" v-if="isNew">
+                <view class="kcmc" :style="{ color: textColor }">{{ kcmc }}</view>
+            </uni-badge>
+            <view class="kcmc" :style="{ color: textColor }" v-else>{{ kcmc }}</view>
+            <view class="message">{{ message }}</view>
+        </view>
+        <view class="right-content">
+            <view class="cj" :style="{ color: color }">{{ cj }}</view>
+            <view class="jd">绩点 {{ jd }}</view>
+        </view>
+    </view>
 </template>
 
 <script>
@@ -30,6 +33,11 @@ export default {
         jd: {
             type: String,
             required: true
+        },
+        isNew: {
+            type: Boolean,
+            required: false,
+            default: false
         }
     },
     computed: {

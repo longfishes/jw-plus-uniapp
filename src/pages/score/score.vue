@@ -104,6 +104,8 @@ export default {
       this.selectedIndex = newSelectedIndex
     },
     toggle(index) {
+      this.gradeItem.list[index].isNew = false
+      this.scoreStore.gradeItem[this.selectedIndex[0]][this.selectedIndex[1]].list[index].isNew = false
       this.data = this.gradeItem.list[index].details
       this.selectedName = this.gradeItem.list[index].kcmc
       this.$refs.popup.open('bottom')
@@ -124,10 +126,27 @@ export default {
       if (res.data.list.length != 0) {
         res.data.xfjd = round(res.data.xfjd)
         this.gradeItem = { list: [], xfjd: '' }
+
+        const list1 = res.data.list;
+        let list2 = this.scoreStore.gradeItem?.[this.selectedIndex[0]]?.[this.selectedIndex[1]]?.list;
+
+        // 持久化
+        this.scoreStore.set(res.data, this.selectedIndex)
+
+        // 标记新出成绩字段
+        if (!list2) list2 = []
+        list1.forEach(item1 => {
+          const matchedItem = list2.find(item2 => item1.kcmc === item2.kcmc);
+          if (!matchedItem || matchedItem.isNew) {
+            item1.isNew = true
+          }
+        });
+        res.data.list = list1
+
+        // 渲染
         setTimeout(() => {
           this.gradeItem = res.data
         }, 200);
-        this.scoreStore.set(res.data, this.selectedIndex)
       }
     },
     showPicker() {
@@ -208,11 +227,11 @@ export default {
 
     <view class="list">
       <uni-transition ref="ani" :mode-class="['fade', 'slide-right']" :show="gradeItem.list[0] != undefined">
-        <uni-section v-if="gradeItem.list[0]">
-          <GradeList v-for="(item, index) in gradeItem.list" :key="index" :kcmc="item.kcmc"
+        <view style="margin-top: 30rpx;">
+          <GradeList v-for="(item, index) in gradeItem.list" :key="index" :kcmc="item.kcmc" :isNew="item.isNew"
             :message="item.kcxzmc + ' · ' + item.xf + '学分 · ' + item.js + (item.khfs == null ? '' : (' · ' + item.khfs))"
             :cj="item.cj" :jd="item.jd" @tap="toggle(index)" />
-        </uni-section>
+        </view>
       </uni-transition>
     </view>
 
@@ -312,7 +331,7 @@ export default {
   align-items: center;
   justify-content: center;
   margin: 50rpx;
-  padding-bottom: 100rpx;
+  padding-bottom: 50rpx;
   position: relative;
 }
 
