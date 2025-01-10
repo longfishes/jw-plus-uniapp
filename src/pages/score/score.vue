@@ -105,7 +105,15 @@ export default {
     },
     toggle(index) {
       this.gradeItem.list[index].isNew = false
-      this.scoreStore.gradeItem[this.selectedIndex[0]][this.selectedIndex[1]].list[index].isNew = false
+      const ele = this.scoreStore.gradeItem[this.selectedIndex[0]][this.selectedIndex[1]].list[index]
+      ele.isNew = false
+      for (let i = 0; i < 3; i++) {
+        if (i != this.selectedIndex[1] && this.scoreStore.gradeItem[this.selectedIndex[0]][i]) {
+          this.scoreStore.gradeItem[this.selectedIndex[0]][i].list.forEach(e => {
+            if (e.kcmc == ele.kcmc) e.isNew = false
+          })
+        }
+      }
       this.data = this.gradeItem.list[index].details
       this.selectedName = this.gradeItem.list[index].kcmc
       this.$refs.popup.open('bottom')
@@ -219,7 +227,7 @@ export default {
 
 <template>
   <page-meta :page-style="'overflow:' + (scollable ? 'visible' : 'hidden')"></page-meta>
-  <view class="index">
+  <view class="score-page">
 
     <view class="query-picker">
       <view class="uni-input" @tap="showPicker">
@@ -289,6 +297,11 @@ export default {
 </template>
 
 <style scoped lang="scss">
+.score-page {
+  background-color: rgba(255, 255, 255, 0);
+  z-index: -1;
+}
+
 .searchBtn {
   margin-top: 50rpx;
   margin-left: 50rpx;
