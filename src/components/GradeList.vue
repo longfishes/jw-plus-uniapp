@@ -96,7 +96,7 @@ export default {
 
 .cj {
     font-size: 24px;
-    font-weight: 600;
+    font-weight: bold;
     text-align: center;
 }
 
