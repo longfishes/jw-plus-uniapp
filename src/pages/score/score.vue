@@ -114,6 +114,9 @@ export default {
       this.$refs.pickerPop.open('bottom')
     },
     async query() {
+      this.queryOptions(false)
+    },
+    async queryOptions(isPulldown) {
       const index = this.multiIndex[1]
       const xnm = parseInt(this.getMyYear()) + this.multiIndex[0]
       const xqm = index === 0 ? '3' : index === 1 ? '12' : ''
@@ -122,7 +125,7 @@ export default {
         method: 'POST',
         url: '/grade/option',
         data: { 'xnm': xnm, 'xqm': xqm }
-      }, true)
+      }, !isPulldown)
       if (res.data.list.length != 0) {
         res.data.xfjd = round(res.data.xfjd)
         this.gradeItem = { list: [], xfjd: '' }
@@ -142,6 +145,8 @@ export default {
 
         // 持久化
         this.scoreStore.set(res.data, this.selectedIndex)
+
+        if (isPulldown) uni.stopPullDownRefresh();
 
         // 渲染
         setTimeout(() => {
@@ -205,6 +210,9 @@ export default {
       this.scoreStore.selectedIndexes = this.selectedIndex
     }
   },
+  onPullDownRefresh() {
+    this.queryOptions(true)
+  }
 }
 </script>
 

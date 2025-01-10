@@ -12,7 +12,8 @@
     {
       "path": "pages/score/score",
       "style": {
-        "navigationBarTitleText": "成绩查询"
+        "navigationBarTitleText": "成绩查询",
+        "enablePullDownRefresh": true
       }
     },
     {
