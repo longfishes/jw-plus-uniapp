@@ -30,7 +30,7 @@ export default {
     },
 
     truncatedData() {
-      return this.data.slice(0, this.data.length - 1);
+      return this.data.length < 3 ? this.data : this.data.slice(0, this.data.length - 1)
     },
 
     multiArray() {
