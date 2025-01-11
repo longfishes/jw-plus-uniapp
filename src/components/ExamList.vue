@@ -42,16 +42,12 @@ export default {
     },
     computed: {
         color() {
-            if (this.cj >= 90 || this.cj == '优秀') return '#19be6b';
-            else if (this.cj >= 60 || this.cj == '良好') return '#2979ff';
-            return '#fa5151';
+            return '#2979ff'
         },
         bg() {
-            if (this.jd < 1) return '#fde2e2'
             return ''
         },
         textColor() {
-            if (this.jd < 1) return '#fa5151'
             return 'black'
         }
     }

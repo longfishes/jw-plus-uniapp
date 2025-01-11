@@ -1,7 +1,7 @@
 <template>
     <view class="grade-list-item" :style="{ borderColor: color, backgroundColor: bg }">
         <view class="left-content">
-            <uni-badge text="新" absolute="rightTop" size="small" :offset="[1, 1]" v-if="isNew">
+            <uni-badge text="新" absolute="rightTop" size="small" :offset="[1, 3]" v-if="isNew">
                 <view class="kcmc" :style="{ color: textColor }">{{ kcmc }}</view>
             </uni-badge>
             <view class="kcmc" :style="{ color: textColor }" v-else>{{ kcmc }}</view>
