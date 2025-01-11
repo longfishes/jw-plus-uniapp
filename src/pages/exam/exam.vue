@@ -1,9 +1,11 @@
 <template>
-  <view class="header" @tap="queryOptions(false)">
-    <view class="header-left">点击或下拉刷新 <uni-icons type="arrow-right" size="15" color="gray" />
-    </view>
-    <view class="header-right">
-      <uni-icons type="loop" size="15" color="gray" />
+  <view class="sticky-content" style="position: sticky; top: 0; z-index: 1000; background-color: #ffffff;">
+    <view class="header" @tap="queryOptions(false)">
+      <view class="header-left">点击或下拉刷新 <uni-icons type="arrow-right" size="15" color="gray" />
+      </view>
+      <view class="header-right">
+        <uni-icons type="loop" size="15" color="gray" />
+      </view>
     </view>
   </view>
 
@@ -17,6 +19,7 @@
         </uni-section>
       </view>
       <Divider text="暂无更多数据" />
+      <view style="height: 10px;"></view>
     </view>
   </uni-transition>
 </template>

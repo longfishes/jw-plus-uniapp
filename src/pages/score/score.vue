@@ -229,8 +229,8 @@ export default {
 
 <template>
   <page-meta :page-style="'overflow:' + (scollable ? 'visible' : 'hidden')"></page-meta>
-  <view class="score-page">
 
+  <view class="score-page">
     <view class="query-picker">
       <view class="uni-input" @tap="showPicker">
         <span class="placeholder">&nbsp;&nbsp;学期</span>&nbsp&nbsp&nbsp|&nbsp&nbsp&nbsp&nbsp;
@@ -238,7 +238,6 @@ export default {
         <span v-if="gradeItem.xfjd" style="font-weight: bold;">平均绩点&nbsp;&nbsp;{{ gradeItem.xfjd }}&nbsp;&nbsp;</span>
       </view>
     </view>
-
     <view class="searchBtn">
       <button style="color: #2979ff;border-color: #2979ff" plain size="" @click="query()">查询</button>
     </view>
@@ -298,7 +297,7 @@ export default {
 
 <style scoped lang="scss">
 .score-page {
-  background-color: rgba(255, 255, 255, 0);
+  background-color: #fff;
   z-index: -1;
 }
 
