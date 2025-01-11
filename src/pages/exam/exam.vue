@@ -1,9 +1,9 @@
 <template>
   <view class="header" @tap="queryOptions(false)">
-    <view class="header-left">点击或下拉刷新 <uni-icons type="arrow-right" size="18" color="gray" />
+    <view class="header-left">点击或下拉刷新 <uni-icons type="arrow-right" size="15" color="gray" />
     </view>
     <view class="header-right">
-      <uni-icons type="loop" size="18" color="gray" />
+      <uni-icons type="loop" size="15" color="gray" />
     </view>
   </view>
 
@@ -123,13 +123,13 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 10px 15px;
-  margin: 25px;
+  margin: 15px;
   border: 1px solid #2979ff;
   border-radius: 8px;
 }
 
 .header-left {
-  font-size: 16px;
+  font-size: 14px;
   color: gray;
 }
 
