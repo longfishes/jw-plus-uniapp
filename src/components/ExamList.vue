@@ -1,20 +1,28 @@
 <template>
     <view class="exam-list-item" :style="{ borderColor: color, backgroundColor: bg }">
         <view class="left-content">
-            <uni-badge text="新" absolute="rightTop" size="small" :offset="[1, 1]" v-if="isNew">
-                <view class="kcmc" :style="{ color: textColor }">{{ kcmc }}</view>
-            </uni-badge>
-            <view class="kcmc" :style="{ color: textColor }" v-else>{{ kcmc }}</view>
-            <view class="message">{{ message }}</view>
+            <view class="kcmc">{{ kcmc }}</view>
+            <view class="message"><uni-icons type="location" size="15" /> {{ location }}</view>
+            <view class="message">
+                <uni-icons type="calendar" size="15" /> {{ date }}
+                <uni-icons custom-prefix="iconfont" type="icon-shizhong" size="13" /> {{ time }}
+            </view>
         </view>
         <view class="right-content">
-            <view class="cj" :style="{ color: color }">{{ cj }}</view>
-            <view class="jd">绩点 {{ jd }}</view>
+            <uni-tag :circle="true" :text="tagText" :type="tagType" size="normal" custom-style="font-weight: bold;" />
         </view>
     </view>
 </template>
 
 <script>
+function split(str) {
+    const match = str.match(/^(\d{4}-\d{2}-\d{2})\((\d{2}:\d{2}-\d{2}:\d{2})\)$/);
+    return {
+        date: match[1],
+        time: match[2]
+    };
+}
+
 export default {
     name: "ExamList",
     props: {
@@ -22,33 +30,48 @@ export default {
             type: String,
             required: true
         },
-        message: {
+        location: {
             type: String,
             required: true
         },
-        cj: {
+        datetime: {
             type: String,
             required: true
         },
-        jd: {
-            type: String,
-            required: true
-        },
-        isNew: {
-            type: Boolean,
-            required: false,
-            default: false
-        }
     },
     computed: {
+        diff() {
+            return Math.round((new Date(this.date) - new Date()) / (24 * 60 * 60 * 1000));
+        },
+        date() {
+            return split(this.datetime).date;
+        },
+        time() {
+            return split(this.datetime).time;
+        },
+        endTime() {
+            const endTimeStr = split(this.datetime).time.split('-')[1];
+            const isoEndTimeStr = `${this.date}T${endTimeStr}:00`;
+            return new Date(isoEndTimeStr);
+        },
         color() {
-            return '#2979ff'
+            if (this.endTime < new Date()) return '#8f939c';
+            else if (this.diff <= 3) return '#fa5151'
+            return '#2979ff';
         },
         bg() {
-            return ''
+            if (this.endTime >= new Date() && this.diff <= 3) return '#fde2e2';
+            return '';
         },
-        textColor() {
-            return 'black'
+        tagType() {
+            if (this.endTime < new Date()) return undefined;
+            else if (this.diff <= 3) return 'error'
+            return 'primary';
+        },
+        tagText() {
+            if (this.endTime < new Date()) return '过去' + (-this.diff) + '天';
+            else if (this.diff <= 3) return '仅剩' + this.diff + '天'
+            return '还剩' + this.diff + '天';
         }
     }
 }
@@ -94,12 +117,5 @@ export default {
     font-size: 24px;
     font-weight: bold;
     text-align: center;
-}
-
-.jd {
-    font-size: 12px;
-    color: gray;
-    margin-top: 2px;
-    text-align: right;
 }
 </style>

@@ -15,6 +15,7 @@ onHide(() => {
 <style lang="scss">
 // 字体图标
 @import '@/styles/fonts.scss';
+@import "@/static/iconfont.scss";
 
 view,
 navigator,
