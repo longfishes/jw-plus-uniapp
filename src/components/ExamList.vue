@@ -1,5 +1,5 @@
 <template>
-    <view class="grade-list-item" :style="{ borderColor: color, backgroundColor: bg }">
+    <view class="exam-list-item" :style="{ borderColor: color, backgroundColor: bg }">
         <view class="left-content">
             <uni-badge text="新" absolute="rightTop" size="small" :offset="[1, 1]" v-if="isNew">
                 <view class="kcmc" :style="{ color: textColor }">{{ kcmc }}</view>
@@ -16,7 +16,7 @@
 
 <script>
 export default {
-    name: "GradeList",
+    name: "ExamList",
     props: {
         kcmc: {
             type: String,
@@ -42,8 +42,8 @@ export default {
     },
     computed: {
         color() {
-            if (this.jd >= 4) return '#19be6b';
-            else if (this.jd >= 1) return '#2979ff';
+            if (this.cj >= 90 || this.cj == '优秀') return '#19be6b';
+            else if (this.cj >= 60 || this.cj == '良好') return '#2979ff';
             return '#fa5151';
         },
         bg() {
@@ -59,7 +59,7 @@ export default {
 </script>
 
 <style scoped>
-.grade-list-item {
+.exam-list-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
