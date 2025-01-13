@@ -30,12 +30,14 @@
                 @touchstart="onTouchStart" @touchend="onTouchEnd">
                 <swiper-item v-for="(item, weekIndex) in totalWeek" :key="weekIndex">
                     <view class="course-list">
-                        <view v-if="courseList.length > 0" class="course-item" v-for="(course, index) in courseList"
-                            :key="course.kch_id"
-                            :style="{ top: `${windowWidth / 7 * (index * 2)}px`, left: '0', height: `${windowWidth / 7 * 2}px` }">
-                            <view class="course-item__content" :style="{ backgroundColor: courseColor[course.kcmc] }">
-                                {{ course.kcmc }}@{{ course.cdmc }}<br>
-                                {{ xqjmcMap[course.xqj] }} - {{ course.jc }}
+                        <view class="course-item" style="top: 0; left: 0; height: 240rpx;">
+                            <view class="course-item__content" style="background-color: #116A7B;">
+                                Web 开发技术@明德楼A1101
+                            </view>
+                        </view>
+                        <view class="course-item" style="top: 240rpx; left: 0; height: 240rpx;">
+                            <view class="course-item__content" style="background-color: #DD58D6;">
+                                数据结构@明德楼A1102
                             </view>
                         </view>
                     </view>
@@ -76,15 +78,6 @@ export default {
             todayMonth: 0,
             todayDay: 0,
             isSwiping: false,
-            xqjmcMap: {
-                "1": "星期一",
-                "2": "星期二",
-                "3": "星期三",
-                "4": "星期四",
-                "5": "星期五",
-                "6": "星期六",
-                "7": "星期日"
-            },
         }
     },
     methods: {
@@ -197,7 +190,6 @@ export default {
                     kcmc: "Web 开发技术",
                     cdmc: "明德楼A1101",
                     jc: "1-2节",
-                    xqjmc: "星期一",
                     xqj: "1",
                     zxs: "24",
                     zcd: "1-6周(单)", // 有效的 zcd 字段
@@ -210,7 +202,6 @@ export default {
                     kcmc: "数据结构",
                     cdmc: "明德楼A1102",
                     jc: "3-4节",
-                    xqjmc: "星期一",
                     xqj: "2",
                     zxs: "24",
                     zcd: "1-6周(双)", // 有效的 zcd 字段
@@ -273,8 +264,7 @@ export default {
 .container {
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    overflow: auto;
+    height: 100%;
 }
 
 .week-list {
@@ -310,7 +300,6 @@ export default {
 .course-content {
     flex: 1;
     display: flex;
-    overflow: hidden;
 }
 
 .course-nums {
