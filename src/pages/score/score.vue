@@ -64,6 +64,16 @@ export default {
     }
   },
   methods: {
+    pickerPopChange(e) {
+      this.scollable = !e.show
+      if (!e.show) {
+        if (!this.unsubmitElement) {
+          this.submitChange(this.selectedIndex)
+        } else {
+          this.submitChange(this.unsubmitElement.target.value)
+        }
+      }
+    },
     popChange(e) {
       this.scollable = !e.show
     },
@@ -274,7 +284,7 @@ export default {
     </view>
 
     <view>
-      <uni-popup ref="pickerPop" background-color="#fff" :safe-area="false" @change="popChange">
+      <uni-popup ref="pickerPop" background-color="#fff" :safe-area="false" @change="pickerPopChange">
         <view class="popup-content">
           <picker-view ref="pickerView" :immediate-change="true" :value="multiIndex" @pickend="pickend"
             @pickstart="pickstart" @change="bindChange" class="picker-view" indicator-style="height: 50px;">
