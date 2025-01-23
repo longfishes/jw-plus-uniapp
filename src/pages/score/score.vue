@@ -66,13 +66,13 @@ export default {
   methods: {
     pickerPopChange(e) {
       this.scollable = !e.show
-      if (!e.show) {
-        if (!this.unsubmitElement) {
-          this.submitChange(this.selectedIndex)
-        } else {
-          this.submitChange(this.unsubmitElement.target.value)
-        }
-      }
+      // if (!e.show) {
+      //   if (!this.unsubmitElement) {
+      //     this.submitChange(this.selectedIndex)
+      //   } else {
+      //     this.submitChange(this.unsubmitElement.target.value)
+      //   }
+      // }
     },
     popChange(e) {
       this.scollable = !e.show
@@ -272,7 +272,7 @@ export default {
           <view class="detail-popup-content">
             <uni-table border stripe>
               <uni-tr v-for="(item, index) in truncatedData" :key="index">
-                <uni-td align="center">{{ item.name }}&nbsp;({{ item.percent * 100 }}%)</uni-td>
+                <uni-td align="center">{{ item.name }}&nbsp;({{ Math.round(item.percent * 100) }}%)</uni-td>
                 <uni-td align="center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ item.score
                   }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</uni-td>
               </uni-tr>

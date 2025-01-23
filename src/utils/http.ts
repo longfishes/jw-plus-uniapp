@@ -20,7 +20,7 @@ const httpInterceptor = {
         // 请求头
         options.header = {
             ...options.header,
-            'source-client': 'miniapp',
+            // 'Base-Url': 'http://jwxt.gcc.edu.cn'
         }
 
         // Token
