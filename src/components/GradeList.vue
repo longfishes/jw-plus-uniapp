@@ -89,6 +89,7 @@ export default {
 }
 
 .right-content {
+    width: 100px;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
