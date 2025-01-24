@@ -166,8 +166,6 @@ export default {
         // 持久化
         this.scoreStore.set(res.data, this.selectedIndex)
 
-        if (isPulldown) uni.stopPullDownRefresh();
-
         // 渲染
         setTimeout(() => {
           this.gradeItem = res.data

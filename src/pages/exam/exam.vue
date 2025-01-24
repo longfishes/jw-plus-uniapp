@@ -58,8 +58,6 @@ export default {
         this.groupExamList() // 分类考试数据
       }, 200)
       examStore.set(res.data)
-
-      if (isPulldown) uni.stopPullDownRefresh()
     },
 
     // 按 xnm 和 xqm 分类考试数据
