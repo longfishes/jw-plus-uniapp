@@ -25,7 +25,8 @@
     {
       "path": "pages/find/find",
       "style": {
-        "navigationBarTitleText": "发现"
+        "navigationBarTitleText": "发现",
+        "enablePullDownRefresh": true
       }
     },
     {

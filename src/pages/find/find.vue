@@ -215,7 +215,7 @@ export default {
             }));
 
             this.buildCourseColor();
-            // uni.setStorageSync('courses', this.courseList);
+            uni.setStorageSync('courses', this.courseList);
         },
         onTouchStart() {
             this.isSwiping = true;
@@ -282,6 +282,9 @@ export default {
         }
     },
     onShow() {
+
+    },
+    onPullDownRefresh() {
         this.update()
     },
     mounted() {
@@ -374,7 +377,6 @@ export default {
     position: relative;
     width: 100%;
     height: 1200rpx;
-    /* 10节课的总高度 */
 }
 
 .course-item {

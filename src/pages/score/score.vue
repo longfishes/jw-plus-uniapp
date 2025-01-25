@@ -137,6 +137,7 @@ export default {
       this.queryOptions(false)
     },
     async queryOptions(isPulldown) {
+      isPulldown = false
       const index = this.multiIndex[1]
       const xnm = parseInt(this.getMyYear()) + this.multiIndex[0]
       const xqm = index === 0 ? '3' : index === 1 ? '12' : ''
