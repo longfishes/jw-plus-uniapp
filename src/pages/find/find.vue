@@ -1,13 +1,6 @@
 <template>
     <view class="container">
-        <cu-custom bgColor="bg-white" customBack="{{true}}" @back="update">
-            <view slot="backText">
-                <!-- <image @click="update" class="refresh-btn" src="/asset/imgs/refresh.png" mode="aspectFill"></image> -->
-            </view>
-            <view slot="content">
-                <view @click="selectWeek"><text>第{{ nowWeek }}周</text> <text class="cuIcon-unfold"></text></view>
-            </view>
-        </cu-custom>
+        <view @tap="selectWeek"><text>第{{ nowWeek }}周</text> <text class="cuIcon-unfold"></text></view>
         <view class="week-list">
             <view class="now-month">
                 <text>{{ nowMonth < 10 ? '0' + nowMonth : nowMonth }}</text>
@@ -26,39 +19,28 @@
                     {{ index + 1 > 9 ? index + 1 : '0' + (index + 1) }}
                 </view>
             </view>
-            <swiper :duration="300" circular class="course-swpier" :current="nowWeek - 1" @change="swiperSwitchWeek"
+            <swiper :duration="300" class="course-swpier" :current="nowWeek - 1" @change="swiperSwitchWeek"
                 @touchstart="onTouchStart" @touchend="onTouchEnd">
                 <swiper-item v-for="(item, weekIndex) in totalWeek" :key="weekIndex">
                     <view class="course-list">
-                        <view class="course-item" style="top: 0; left: 0; height: 240rpx;">
-                            <view class="course-item__content" style="background-color: #116A7B;">
-                                Web 开发技术@明德楼A1101
-                            </view>
-                        </view>
-                        <view class="course-item" style="top: 240rpx; left: 0; height: 240rpx;">
-                            <view class="course-item__content" style="background-color: #DD58D6;">
-                                数据结构@明德楼A1102
+                        <view class="course-item" v-for="(course, index) in courseList" :key="course.id"
+                            :style="getCourseStyle(course)">
+                            <view class="course-item__content"
+                                :style="{ backgroundColor: courseColor[course.kcmc], zIndex: 1 }"
+                                @tap="showCourseDetail(course)" v-if="indexOf(course.zcd, weekIndex + 1)">
+                                {{ course.kcmc }}&nbsp;{{ course.xslxbj }}<br />@{{ course.cdmc }}
                             </view>
                         </view>
                     </view>
                 </swiper-item>
             </swiper>
         </view>
-        <!-- <van-popup v-model="showSwitchWeek" position="bottom" @close="hideSwitchWeek" round>
-            <view class="switch-week__popup">
-                <view class="switch-week__title">切换周数</view>
-                <view class="switch-week__list">
-                    <view class="switch-week__item" v-for="(item, index) in totalWeek" :key="index">
-                        <view @click="switchWeek(item + 1)" :class="{ 'active': nowWeek == index + 1 }"
-                            class="switch-week__item-box">{{ item + 1 }}</view>
-                    </view>
-                </view>
-            </view>
-        </van-popup> -->
     </view>
 </template>
 
 <script>
+import { http } from '@/utils/http'
+
 export default {
     data() {
         return {
@@ -70,7 +52,20 @@ export default {
             weekIndexText: ['一', '二', '三', '四', '五', '六', '日'],
             nowMonth: 1,
             courseList: [],
-            colorList: ["#116A7B", "#DD58D6", "#30A2FF", "#0079FF", "#F79327", "#47A992", "#7A3E3E", "#FF55BB", "#A0D8B3", "#539165", "#3A98B9", "#609966"],
+            colorList: [
+                "#116A7B",
+                "#DD58D6",
+                "#30A2FF",
+                "#0079FF",
+                "#F79327",
+                "#47A992",
+                "#7A3E3E",
+                "#FF55BB",
+                "#A0D8B3",
+                "#539165",
+                "#3A98B9",
+                "#609966"
+            ],
             courseColor: {},
             weekCalendar: [1, 2, 3, 4, 5, 6, 7],
             firstEntry: true,
@@ -78,6 +73,7 @@ export default {
             todayMonth: 0,
             todayDay: 0,
             isSwiping: false,
+            currentIndex: undefined,
         }
     },
     methods: {
@@ -143,24 +139,34 @@ export default {
             const weekRanges = zcd.split(','); // 以逗号分隔
             weekRanges.forEach(range => {
                 range = range.trim();
-                const match = range.match(/(\d+)-(\d+)(\((单|双)\))?/); // 匹配范围和单双周
+                const match = range.match(/(\d+)-(\d+)周\((单|双)\)/);
                 if (match) {
                     const start = parseInt(match[1]);
                     const end = parseInt(match[2]);
-                    for (let i = start; i <= end; i++) {
-                        weeks.push(i); // 添加范围内的周
-                    }
                     if (match[3]) {
                         // 如果有单双周，添加相应的周
-                        if (match[4] === '双') {
-                            weeks.push(...Array.from({ length: end - start + 1 }, (_, i) => start + i * 2));
-                        } else if (match[4] === '单') {
-                            weeks.push(...Array.from({ length: end - start + 1 }, (_, i) => start + i * 2 + 1));
+                        if (match[3] === '双') {
+                            for (let i = start; i <= end; i++) {
+                                if (i % 2 === 0) weeks.push(i); // 只添加双周
+                            }
+                        } else if (match[3] === '单') {
+                            for (let i = start; i <= end; i++) {
+                                if (i % 2 !== 0) weeks.push(i); // 只添加单周
+                            }
                         }
                     }
                 } else {
-                    // 处理单个周
-                    weeks.push(parseInt(range));
+                    const m2 = range.match(/(\d+)-(\d+)周/);
+                    if (m2) {
+                        // 没有单双周标识，添加范围内的周
+                        for (let j = parseInt(m2[1]); j <= parseInt(m2[2]); j++) {
+                            weeks.push(j); // 添加范围内的周
+                        }
+                    }
+                    else {
+                        // 处理单个周
+                        weeks.push(parseInt(range));
+                    }
                 }
             });
             return weeks.includes(week); // 检查是否包含当前周
@@ -177,47 +183,39 @@ export default {
                 }
                 return
             }
-            this.updateFn(true)
+            this.updateFn()
         },
         update() {
             this.updateFn()
         },
-        updateFn(firstEntry = false) {
-            // 模拟假数据
-            const mockData = [
-                {
-                    kch_id: "1",
-                    kcmc: "Web 开发技术",
-                    cdmc: "明德楼A1101",
-                    jc: "1-2节",
-                    xqj: "1",
-                    zxs: "24",
-                    zcd: "1-6周(单)", // 有效的 zcd 字段
-                    section: 1,
-                    sectionCount: 2,
-                    weeks: "1,2,3,4,5,6" // 课程周数
-                },
-                {
-                    kch_id: "2",
-                    kcmc: "数据结构",
-                    cdmc: "明德楼A1102",
-                    jc: "3-4节",
-                    xqj: "2",
-                    zxs: "24",
-                    zcd: "1-6周(双)", // 有效的 zcd 字段
-                    section: 3,
-                    sectionCount: 2,
-                    weeks: "1,2,3,4,5,6" // 课程周数
-                }
-            ];
+        async updateFn() {
+            const res = await http({
+                method: 'POST',
+                url: '/kb/option',
+                data: { 'xnm': '2024', 'xqm': '12' }
+            }, true)
 
-            // 直接返回假数据
-            this.courseList = mockData;
+            // const mockData = [
+            //     {
+            //         "kcmc": "(网络课)学问海鲜",
+            //         "xslxbj": "*",
+            //         "cdmc": "广学楼330(多)",
+            //         "jc": "1-2节",
+            //         "xqj": "6",
+            //         "zcd": "2-4周(双),7周,10-12周(双)"
+            //     },
+            // ]
+            // const res = {}
+            // res.data = mockData
+
+            // 为每个课程添加唯一id
+            this.courseList = res.data.map((course, index) => ({
+                ...course,
+                id: index
+            }));
+
             this.buildCourseColor();
-            if (!firstEntry) {
-                uni.showToast({ title: '更新成功', icon: 'success' });
-            }
-            uni.setStorageSync('courses', mockData);
+            // uni.setStorageSync('courses', this.courseList);
         },
         onTouchStart() {
             this.isSwiping = true;
@@ -226,36 +224,83 @@ export default {
             this.isSwiping = false;
         },
         swiperSwitchWeek(e) {
-            const index = e.detail.current;
-            this.nowWeek = index + 1;
+            this.nowWeek = e.detail.current + 1;
             this.getWeekDates();
         },
         buildCourseColor() {
-            const courseColor = {}
-            let colorIndex = 0
+            const courseColor = {};
+            let colorIndex = 0;
+            const colorListLength = this.colorList.length;
+
             this.courseList.forEach(item => {
                 if (courseColor[item.kcmc] === undefined) {
-                    courseColor[item.kcmc] = this.colorList[colorIndex]
-                    colorIndex++
+                    // 当colorIndex达到颜色数组长度时，重置为0
+                    if (colorIndex >= colorListLength) {
+                        colorIndex = 0;
+                    }
+                    courseColor[item.kcmc] = this.colorList[colorIndex];
+                    colorIndex++;
                 }
-            })
-            uni.setStorageSync('courseColor', courseColor)
-            this.courseColor = courseColor
+            });
+
+            uni.setStorageSync('courseColor', courseColor);
+            this.courseColor = courseColor;
         },
         getTodayDate() {
             const { month: todayMonth, day: todayDay } = this.getDateObject()
             this.todayMonth = todayMonth
             this.todayDay = todayDay
         },
-        navCourseDetail(e) {
-            const index = e.currentTarget.dataset.index
-            uni.navigateTo({
-                url: `/pages/course-detail/index?info=${JSON.stringify(this.courseList[index])}`,
-            })
+        getCourseStyle(course) {
+            // 解析节次信息，例如 "1-2节"
+            const [startSection, endSection] = course.jc
+                .replace('节', '')
+                .split('-')
+                .map(num => parseInt(num));
+
+            // 计算课程持续节数
+            const sectionCount = endSection - startSection + 1;
+
+            // 计算位置
+            const left = `${(parseInt(course.xqj) - 1) * (100 / 7)}%`;  // 星期几
+            const top = `${(startSection - 1) * 120}rpx`;             // 开始节次
+            const height = `${sectionCount * 120}rpx`;                // 课程节数
+            const width = `${100 / 7}%`;                                // 每天的宽度
+
+            return {
+                left,
+                top,
+                height,
+                width,
+                position: 'absolute',
+                boxSizing: 'border-box',
+                padding: '2rpx'
+            }
+        },
+        showCourseDetail(course) {
+            console.log(course)
         }
+    },
+    onShow() {
+        this.update()
     },
     mounted() {
         this.onLoad()
+    },
+    computed: {
+        preloadedWeeks() {
+            const weeks = {};
+            // 预加载当前周及其前后一周的数据
+            [-1, 0, 1].forEach(offset => {
+                const weekNum = this.nowWeek + offset;
+                if (weekNum > 0 && weekNum <= this.totalWeek) {
+                    weeks[weekNum] = this.courseList.filter(course =>
+                        this.indexOf(course.zcd, weekNum)
+                    );
+                }
+            });
+            return weeks;
+        }
     }
 }
 </script>
@@ -325,10 +370,18 @@ export default {
     height: 1200rpx;
 }
 
+.course-list {
+    position: relative;
+    width: 100%;
+    height: 1200rpx;
+    /* 10节课的总高度 */
+}
+
 .course-item {
     position: absolute;
-    width: calc((100% - 50rpx) / 7);
+    box-sizing: border-box;
     padding: 2rpx;
+    pointer-events: none;
 }
 
 .course-item__content {
@@ -337,7 +390,9 @@ export default {
     border-radius: 8rpx;
     font-size: 24rpx;
     color: #ffffff;
-    text-align: center;
+    padding: 4rpx;
+    word-break: break-all;
+    pointer-events: auto;
 }
 
 .switch-week__popup {
