@@ -116,6 +116,7 @@ export default {
       this.selectedIndex = newSelectedIndex
     },
     toggle(index) {
+      uni.vibrateShort({type: 'heavy'})
       this.gradeItem.list[index].isNew = false
       const ele = this.scoreStore.gradeItem[this.selectedIndex[0]][this.selectedIndex[1]].list[index]
       ele.isNew = false
