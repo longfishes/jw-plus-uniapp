@@ -32,11 +32,16 @@ export default {
         })
         return;
       }
-      const res = await http({
-        method: 'POST',
-        url: '/auth/token',
-        data: this.baseFormData
-      }, true)
+      let res = null
+      try {
+        res = await http({
+          method: 'POST',
+          url: '/auth/token',
+          data: this.baseFormData
+        }, true)
+      } finally {
+        uni.hideLoading();
+      }
 
       if (this.baseFormData.username != memberStore.profile.username) {
         scoreStore.clear()

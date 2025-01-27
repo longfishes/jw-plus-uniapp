@@ -143,11 +143,18 @@ export default {
       const xnm = parseInt(this.getMyYear()) + this.multiIndex[0]
       const xqm = index === 0 ? '3' : index === 1 ? '12' : ''
 
-      const res = await http({
+      let res = null
+      try {
+        res = await http({
         method: 'POST',
         url: '/grade/option',
-        data: { 'xnm': xnm, 'xqm': xqm }
-      }, !isPulldown)
+          data: { 'xnm': xnm, 'xqm': xqm }
+        }, !isPulldown)
+      } finally {
+        uni.stopPullDownRefresh();
+        uni.hideLoading();
+      }
+
       if (res.data.list.length != 0) {
         res.data.xfjd = round(res.data.xfjd)
         this.gradeItem = { list: [], xfjd: '' }

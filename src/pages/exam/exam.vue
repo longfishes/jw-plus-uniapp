@@ -46,11 +46,17 @@ export default {
   },
   methods: {
     async queryOptions(isPulldown) {
-      const res = await http({
-        method: 'POST',
-        url: '/exam/option',
-        data: { xnm: '', xqm: '' }
-      }, !isPulldown)
+      let res = null
+      try {
+        res = await http({
+          method: 'POST',
+          url: '/exam/option',
+          data: { xnm: '', xqm: '' }
+        }, !isPulldown)
+      } finally {
+        uni.stopPullDownRefresh();
+        uni.hideLoading();
+      }
 
       this.examList = [] // 清空原有数据
       setTimeout(() => {

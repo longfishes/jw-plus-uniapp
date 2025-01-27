@@ -55,8 +55,6 @@ export const http = <T>(options: UniApp.RequestOptions, loading: boolean) => {
             ...options,
             // 响应成功
             success(res) {
-                uni.hideLoading();
-                uni.stopPullDownRefresh();
                 if ((res.data as any).msg == '未认证') {
                     uni.navigateTo({ url: '/pages/login/login' })
                     uni.showToast({
@@ -97,8 +95,6 @@ export const http = <T>(options: UniApp.RequestOptions, loading: boolean) => {
             },
             // 响应失败
             fail(err) {
-                uni.hideLoading();
-                uni.stopPullDownRefresh();
                 uni.showToast({
                     icon: 'none',
                     title: '网络错误，换个网络试试',
