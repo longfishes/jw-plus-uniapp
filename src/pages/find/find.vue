@@ -1,9 +1,16 @@
 <template>
     <page-meta :page-style="'overflow:' + (!isSwiping ? 'visible' : 'hidden')"></page-meta>
 
-    <view class="navbar" :style="{ paddingTop: safeAreaTop + 'px', position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, backgroundColor: '#fff' }">
+    <view class="mask" v-if="isSwiping" @click="closeMask"></view>
+
+    <view class="progress-container">
+        <Progress v-model:value="nowWeek" :max="totalWeek" />
+    </view>
+
+    <view class="navbar"
+        :style="{ paddingTop: safeAreaTop + 'px', position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, backgroundColor: '#fff' }">
         <view class="header">
-            <uni-icons type="settings" size="30"></uni-icons>
+            <uni-icons type="settings" size="30" @tap="toggleSetting"></uni-icons>
             <view class="spacer"></view>
             <view class="center-content" @tap="toggleSelectWeek">
                 <text>第{{ nowWeek }}周</text>&nbsp;
@@ -15,13 +22,27 @@
         </view>
     </view>
 
-    <scroll-view 
-    scroll-y="true" 
-    refresher-enabled="true" 
-    @refresherrefresh="onRefresh"
-    :refresher-triggered="isTriggered"
-    :style="{ paddingTop: paddingTopStyle }"
-    >
+    <view>
+        <uni-popup 
+            ref="settingPop" 
+            type="bottom" 
+            :safeArea="false" 
+            @change="settingPopChange"
+            mask-background-color="rgba(0, 0, 0, 0)"
+        >
+            <view class="setting-popup-content">
+                <uni-list class="custom-list" :border="false">
+                    <uni-list-item title="弹窗提示" clickable @click="testNotice" />
+                    <uni-list-item title="页面跳转" clickable />
+                    <uni-list-item title="关闭当前页面打开新页面" showArrow />
+                    <uni-list-item title="打开错误页面(查看控制台)" showArrow />
+                </uni-list>
+            </view>
+        </uni-popup>
+    </view>
+
+    <scroll-view scroll-y="true" refresher-enabled="true" @refresherrefresh="onRefresh"
+        :refresher-triggered="isTriggered" :style="{ paddingTop: paddingTopStyle }">
         <view class="container">
             <view class="week-list">
                 <view style="width: 50rpx;"></view>
@@ -31,20 +52,20 @@
                         <text class="week-name">{{ weekIndexText[index] }}</text>
                         <text class="week-date">
                             {{
-            // 计算当前日期
-            (() => {
-                const day = weekCalendar[index];
-                let month = nowMonth;
+        // 计算当前日期
+        (() => {
+            const day = weekCalendar[index];
+            let month = nowMonth;
 
-                // 如果是每月的第一天，检查是否需要增加月份
-                if (day === 1) {
-                    month = (nowMonth === 12) ? 1 : (nowMonth + 1);
-                }
+            // 如果是每月的第一天，检查是否需要增加月份
+            if (day === 1) {
+                month = (nowMonth === 12) ? 1 : (nowMonth + 1);
+            }
 
-                // 返回格式化的日期
-                return `${month}/${day}`;
-            })()
-        }}
+            // 返回格式化的日期
+            return `${month}/${day}`;
+        })()
+    }}
                         </text>
                     </view>
                 </view>
@@ -67,10 +88,10 @@
                                 <view class="course-item" v-for="course in courseList" :key="'current-' + course.id"
                                     :style="getCourseStyle(course)">
                                     <view class="course-item__content" v-if="indexOf(course.zcd, weekIndex + 1)" :style="{
-            backgroundColor: courseColor[course.kcmc],
-            zIndex: 3,
-            opacity: 1
-        }" @tap="showCourseDetail(course)">
+        backgroundColor: courseColor[course.kcmc],
+        zIndex: 3,
+        opacity: 1
+    }" @tap="showCourseDetail(course)">
                                         {{ course.kcmc }}&nbsp;{{ course.xslxbj }}<br />
                                         <view class="location">@{{ course.cdmc }}</view>
                                         <view class="conflict-indicator"
@@ -83,11 +104,11 @@
                                 <view class="course-item" v-for="course in courseList" :key="'next-' + course.id"
                                     :style="getCourseStyle(course)">
                                     <view class="course-item__content" v-if="indexOf(course.zcd, weekIndex + 2)" :style="{
-            backgroundColor: '#dcdcdc',
-            zIndex: 2,
-            opacity: 0.8,
-            color: '#989898'
-        }" @tap="showCourseDetail(course)">
+        backgroundColor: '#dcdcdc',
+        zIndex: 2,
+        opacity: 0.8,
+        color: '#989898'
+    }" @tap="showCourseDetail(course)">
                                         <view class="course-tag">[下周]</view><br />
                                         {{ course.kcmc }}&nbsp;{{ course.xslxbj }}<br />
                                         <view class="location">@{{ course.cdmc }}</view>
@@ -103,10 +124,10 @@
                                     <view class="course-item__content"
                                         v-if="!indexOf(course.zcd, weekIndex + 1) && !indexOf(course.zcd, weekIndex + 2) && hasLaterWeek(course.zcd, weekIndex + 1)"
                                         :style="{
-            backgroundColor: '#dcdcdc',
-            zIndex: 1,
-            opacity: 0.8
-        }" @tap="showCourseDetail(course)">
+        backgroundColor: '#dcdcdc',
+        zIndex: 1,
+        opacity: 0.8
+    }" @tap="showCourseDetail(course)">
                                         <view class="course-tag">[非本周]</view><br />
                                         {{ course.kcmc }}&nbsp;{{ course.xslxbj }}<br />
                                         <view class="location">@{{ course.cdmc }}</view>
@@ -126,9 +147,9 @@
             <uni-popup ref="detailPop" background-color="transparent" @change="detailPopChange" type="center">
                 <view class="popup-list">
                     <view class="popup-content" v-for="(course, index) in courseDetail" :key="index" :style="{
-            backgroundColor: isCurrentWeekCourse(course.zcd, nowWeek) ?
-                (index === 0 ? courseColor[course.kcmc] : '#dcdcdc') : '#dcdcdc'
-        }">
+        backgroundColor: isCurrentWeekCourse(course.zcd, nowWeek) ?
+            (index === 0 ? courseColor[course.kcmc] : '#dcdcdc') : '#dcdcdc'
+    }">
 
                         <view class="week-tag" v-if="!isCurrentWeekCourse(course.zcd, nowWeek)">
                             {{ indexOf(course.zcd, nowWeek + 1) ? '[下周]' : '[非本周]' }}
@@ -158,8 +179,12 @@
 
 <script>
 import { http } from '@/utils/http'
+import Progress from '@/components/Progress.vue'
 
 export default {
+    components: {
+        Progress
+    },
     data() {
         return {
             startDate: '2024/01/01',
@@ -193,6 +218,12 @@ export default {
     methods: {
         toggleSelectWeek() {
             this.showSwitchWeek = !this.showSwitchWeek
+        },
+        toggleSetting() {
+            this.$refs.settingPop.open()
+        },
+        settingPopChange(e) {
+            this.isSwiping = e.show
         },
         getDateObject(date = new Date()) {
             const year = date.getFullYear()
@@ -273,8 +304,8 @@ export default {
             let res = null
             try {
                 res = await http({
-                method: 'POST',
-                url: '/kb/option',
+                    method: 'POST',
+                    url: '/kb/option',
                     data: { 'xnm': this.xnm, 'xqm': this.xqm }
                 }, true)
             } finally {
@@ -548,6 +579,16 @@ export default {
             this.isTriggered = true
             this.update()
         },
+        testNotice() {
+            uni.showToast({
+                title: '弹窗提示',
+                icon: 'none'
+            })
+        },
+        closeMask() {
+            this.$refs.detailPop?.close()
+            this.$refs.settingPop?.close()
+        }
     },
     onShow() {
     },
@@ -576,6 +617,14 @@ export default {
 </script>
 
 <style scoped>
+.progress-container {
+    position: fixed;
+    top: v-bind('`calc(${paddingTopStyle} + 100px)`');
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+
 .container {
     display: flex;
     flex-direction: column;
@@ -759,12 +808,6 @@ export default {
     margin-top: 2rpx;
 }
 
-:deep(.uni-popup .uni-popup__wrapper) {
-    border-radius: 12rpx !important;
-    overflow: hidden;
-    background-color: transparent !important;
-}
-
 .popup-list {
     display: flex;
     flex-wrap: wrap;
@@ -782,5 +825,33 @@ export default {
     border-radius: 50%;
     background-color: rgba(255, 255, 255, 0.5);
     pointer-events: none;
+}
+
+.setting-popup-content {
+    /* height: 300px; */
+    background-color: #fff;
+    border-radius: 24rpx 24rpx 0 0;
+    padding: 20rpx;
+    padding-bottom: 40rpx;
+    box-sizing: border-box;
+}
+
+:deep(.uni-list-item__content-title) {
+    font-size: 28rpx !important;
+}
+
+:deep(.uni-list-item) {
+    padding: 12rpx 0 !important;
+}
+
+.mask {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 101;
+    height: v-bind('`calc(${paddingTopStyle} + 2px)`');
+    background-color: rgba(0, 0, 0, 0);
 }
 </style>
