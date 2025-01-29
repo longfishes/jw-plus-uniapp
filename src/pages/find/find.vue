@@ -1,11 +1,7 @@
 <template>
     <page-meta :page-style="'overflow:' + (!isSwiping ? 'visible' : 'hidden')"></page-meta>
 
-    <view class="mask" v-if="isSwiping" @click="closeMask"></view>
-
-    <view class="progress-container">
-        <Progress v-model:value="nowWeek" :max="totalWeek" />
-    </view>
+    <!-- <view class="mask" v-if="isSwiping" @click="closeMask"></view> -->
 
     <view class="navbar"
         :style="{ paddingTop: safeAreaTop + 'px', position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, backgroundColor: '#fff' }">
@@ -13,9 +9,11 @@
             <uni-icons type="settings" size="30" @tap="toggleSetting"></uni-icons>
             <view class="spacer"></view>
             <view class="center-content" @tap="toggleSelectWeek">
-                <text>第{{ nowWeek }}周</text>&nbsp;
-                <uni-icons v-if="!showSwitchWeek" type="down" size="18"></uni-icons>
-                <uni-icons v-else type="up" size="18"></uni-icons>
+                <view class="week-info">
+                    <text>第{{ nowWeek }}周</text>
+                </view>
+                <uni-icons v-if="!showSwitchWeek" type="down" size="18" color="#2979ff"></uni-icons>
+                <uni-icons v-else type="up" size="18" color="#2979ff"></uni-icons>
             </view>
             <view class="spacer"></view>
             <uni-icons type="more" size="30" style="visibility: hidden;"></uni-icons>
@@ -24,16 +22,47 @@
 
     <view>
         <uni-popup 
+            ref="swichWeekPop" 
+            type="bottom" 
+            :safeArea="false" 
+            @change="swichWeekPopChange"
+        >
+            <view class="progress-container">
+                <view class="progress-header">
+                    <text class="header-title">周数</text>
+                    <text class="header-action" 
+                        v-if="getNowWeek() == -1"
+                    >
+                        学期未开始
+                    </text>
+                    <text class="header-action" 
+                        v-else-if="getNowWeek() == -2"
+                    >
+                        学期已结束
+                    </text>
+                    <text class="header-action" 
+                        v-else-if="this.nowWeek != getNowWeek()"
+                        @tap="backToCurrentWeek"
+                    >
+                        回到本周
+                    </text>
+                </view>
+                <Progress v-model:value="nowWeek" :max="totalWeek" />
+            </view>
+        </uni-popup>
+    </view>
+
+    <view>
+        <uni-popup 
             ref="settingPop" 
             type="bottom" 
             :safeArea="false" 
             @change="settingPopChange"
-            mask-background-color="rgba(0, 0, 0, 0)"
         >
             <view class="setting-popup-content">
                 <uni-list class="custom-list" :border="false">
-                    <uni-list-item title="弹窗提示" clickable @click="testNotice" />
-                    <uni-list-item title="页面跳转" clickable />
+                    <uni-list-item title="最新课表" clickable @click="newestCourse" />
+                    <uni-list-item title="切换学期" clickable @click="navigateToStage" />
                     <uni-list-item title="关闭当前页面打开新页面" showArrow />
                     <uni-list-item title="打开错误页面(查看控制台)" showArrow />
                 </uni-list>
@@ -71,8 +100,15 @@
                 </view>
             </view>
             <view class="course-content">
-                <swiper :duration="300" class="course-swpier" :current="nowWeek - 1" @change="swiperSwitchWeek"
-                    @touchstart="onTouchStart" @touchend="onTouchEnd">
+                <swiper 
+                    :duration="300" 
+                    class="course-swpier" 
+                    @touchstart="onTouchStart"
+                    @touchend="onTouchEnd"
+                    :current="nowWeek - 1"
+                    @change="swiperSwitchWeek"
+                    @animationfinish="onAnimationfinish"
+                >
                     <swiper-item v-for="(item, weekIndex) in totalWeek" :key="weekIndex">
                         <view class="course-container">
                             <view class="course-nums">
@@ -84,66 +120,77 @@
                             </view>
 
                             <view class="course-list">
-                                <!-- 1. 先渲染本周的课程 -->
-                                <view class="course-item" v-for="course in courseList" :key="'current-' + course.id"
-                                    :style="getCourseStyle(course)">
-                                    <view class="course-item__content" v-if="indexOf(course.zcd, weekIndex + 1)" :style="{
-        backgroundColor: courseColor[course.kcmc],
-        zIndex: 3,
-        opacity: 1
-    }" @tap="showCourseDetail(course)">
-                                        {{ course.kcmc }}&nbsp;{{ course.xslxbj }}<br />
-                                        <view class="location">@{{ course.cdmc }}</view>
-                                        <view class="conflict-indicator"
-                                            v-if="findOverlappingCourses(course, weekIndex + 1).length > 1">
-                                        </view>
-                                    </view>
-                                </view>
+                                <template v-for="(course, index) in courseList" :key="index">
+                                    <view class="course-item" :style="getCourseStyle(course)">
+                                        <template v-if="shouldShowCourse(course, weekIndex + 1)">
+                                            <!-- 当前周课程 -->
+                                            <view 
+                                                v-if="indexOf(course.zcd, weekIndex + 1)"
+                                                class="course-item__content"
+                                                :style="{
+                                                    backgroundColor: courseColor[course.kcmc],
+                                                    zIndex: 3,
+                                                    opacity: 1
+                                                }"
+                                                @tap="showCourseDetail(course)"
+                                            >
+                                                {{ course.kcmc }}&nbsp;{{ course.xslxbj }}<br />
+                                                <view class="location">@{{ course.cdmc }}</view>
+                                                <view class="conflict-indicator" 
+                                                    v-if="findOverlappingCourses(course, weekIndex + 1).length > 1">
+                                                </view>
+                                            </view>
 
-                                <!-- 2. 再渲染下一周的课程 -->
-                                <view class="course-item" v-for="course in courseList" :key="'next-' + course.id"
-                                    :style="getCourseStyle(course)">
-                                    <view class="course-item__content" v-if="indexOf(course.zcd, weekIndex + 2)" :style="{
-        backgroundColor: '#dcdcdc',
-        zIndex: 2,
-        opacity: 0.8,
-        color: '#989898'
-    }" @tap="showCourseDetail(course)">
-                                        <view class="course-tag">[下周]</view><br />
-                                        {{ course.kcmc }}&nbsp;{{ course.xslxbj }}<br />
-                                        <view class="location">@{{ course.cdmc }}</view>
-                                        <view class="conflict-indicator"
-                                            v-if="findOverlappingCourses(course, weekIndex + 1).length > 1">
-                                        </view>
-                                    </view>
-                                </view>
+                                            <!-- 下周课程 -->
+                                            <view 
+                                                v-else-if="indexOf(course.zcd, weekIndex + 2)"
+                                                class="course-item__content"
+                                                :style="{
+                                                    backgroundColor: '#dcdcdc',
+                                                    zIndex: 2,
+                                                    opacity: 0.8,
+                                                    color: '#989898'
+                                                }"
+                                                @tap="showCourseDetail(course)"
+                                            >
+                                                <view class="course-tag">[下周]</view><br />
+                                                {{ course.kcmc }}&nbsp;{{ course.xslxbj }}<br />
+                                                <view class="location">@{{ course.cdmc }}</view>
+                                                <view class="conflict-indicator" 
+                                                    v-if="findOverlappingCourses(course, weekIndex + 1).length > 1">
+                                                </view>
+                                            </view>
 
-                                <!-- 3. 最后渲染其他非本周的课程 -->
-                                <view class="course-item" v-for="course in courseList" :key="'future-' + course.id"
-                                    :style="getCourseStyle(course)">
-                                    <view class="course-item__content"
-                                        v-if="!indexOf(course.zcd, weekIndex + 1) && !indexOf(course.zcd, weekIndex + 2) && hasLaterWeek(course.zcd, weekIndex + 1)"
-                                        :style="{
-        backgroundColor: '#dcdcdc',
-        zIndex: 1,
-        opacity: 0.8
-    }" @tap="showCourseDetail(course)">
-                                        <view class="course-tag">[非本周]</view><br />
-                                        {{ course.kcmc }}&nbsp;{{ course.xslxbj }}<br />
-                                        <view class="location">@{{ course.cdmc }}</view>
-                                        <view class="conflict-indicator"
-                                            v-if="findOverlappingCourses(course, weekIndex + 1).length > 1">
-                                        </view>
+                                            <!-- 非本周课程 -->
+                                            <view 
+                                                v-else-if="hasLaterWeek(course.zcd, weekIndex + 1)"
+                                                class="course-item__content"
+                                                :style="{
+                                                    backgroundColor: '#dcdcdc',
+                                                    zIndex: 1,
+                                                    opacity: 0.8
+                                                }"
+                                                @tap="showCourseDetail(course)"
+                                            >
+                                                <view class="course-tag">[非本周]</view><br />
+                                                {{ course.kcmc }}&nbsp;{{ course.xslxbj }}<br />
+                                                <view class="location">@{{ course.cdmc }}</view>
+                                                <view class="conflict-indicator" 
+                                                    v-if="findOverlappingCourses(course, weekIndex + 1).length > 1">
+                                                </view>
+                                            </view>
+                                        </template>
                                     </view>
-                                </view>
+                                </template>
                             </view>
                         </view>
                     </swiper-item>
                 </swiper>
             </view>
         </view>
+    </scroll-view>
 
-        <view @tap="closeDetailPop">
+    <view @tap="closeDetailPop">
             <uni-popup ref="detailPop" background-color="transparent" @change="detailPopChange" type="center">
                 <view class="popup-list">
                     <view class="popup-content" v-for="(course, index) in courseDetail" :key="index" :style="{
@@ -174,7 +221,7 @@
                 </view>
             </uni-popup>
         </view>
-    </scroll-view>
+
 </template>
 
 <script>
@@ -208,22 +255,27 @@ export default {
             todayDay: 0,
             isSwiping: false,
             courseDetail: [],
-            currentSlidingWeek: 1,
             startTimes: ['08:10', '09:00', '10:15', '11:05', '14:30', '15:20', '16:30', '17:20', '19:30', '20:25'],
             endTimes: ['08:55', '09:45', '11:00', '11:50', '15:15', '16:05', '17:15', '18:05', '20:15', '21:10'],
             safeAreaTop: 0,
-            isTriggered: false
+            isTriggered: false,
         }
     },
     methods: {
         toggleSelectWeek() {
-            this.showSwitchWeek = !this.showSwitchWeek
+            uni.vibrateShort({ type: 'heavy' })
+            this.$refs.swichWeekPop.open()
         },
         toggleSetting() {
+            uni.vibrateShort({ type: 'heavy' })
             this.$refs.settingPop.open()
         },
         settingPopChange(e) {
             this.isSwiping = e.show
+        },
+        swichWeekPopChange(e) {
+            this.isSwiping = e.show
+            this.showSwitchWeek = e.show
         },
         getDateObject(date = new Date()) {
             const year = date.getFullYear()
@@ -237,11 +289,19 @@ export default {
             const timeDiff = nowDate - startDate; // 时间差
             let nowWeek = Math.ceil(timeDiff / (1000 * 60 * 60 * 24 * 7)); // 计算周数
             if (nowWeek < 1) {
-                nowWeek = 1; // 如果当前日期在学期开始之前，设置为第一周
+                nowWeek = -1; // 当前日期在学期开始之前
             } else if (nowWeek > this.totalWeek) {
-                nowWeek = 1; // 如果超过总周数，也设置为第一周
+                nowWeek = -2; // 超过总周数, 学期已结束
             }
-            this.nowWeek = nowWeek;
+            return nowWeek
+        },
+        slideNowWeek() {
+            let nowWeek = this.getNowWeek()
+            if (nowWeek < 0) {
+                this.nowWeek = 1
+            } else {
+                this.nowWeek = nowWeek
+            }
         },
         calculateNowWeek(startDate, totalWeek) {
             const nowDate = new Date().getTime()
@@ -329,14 +389,20 @@ export default {
             this.getData()
             this.updateWeekDates()
         },
-        onTouchStart(e) {
-            this.currentSlidingWeek = this.nowWeek;
+        swiperSwitchWeek(e) {
+            if (e.target.source === 'touch') {
+                this.nowWeek = e.detail.current + 1;
+                this.updateWeekDates();
+            }
+        },
+        onTouchStart() {
+
         },
         onTouchEnd() {
+            
         },
-        swiperSwitchWeek(e) {
-            this.nowWeek = e.detail.current + 1;
-            this.updateWeekDates();
+        onAnimationfinish(e) {
+
         },
         buildCourseColor() {
             uni.removeStorageSync('courseColor')
@@ -579,18 +645,85 @@ export default {
             this.isTriggered = true
             this.update()
         },
-        testNotice() {
-            uni.showToast({
-                title: '弹窗提示',
-                icon: 'none'
-            })
+        newestCourse() {
+            console.log('最新课表')
         },
         closeMask() {
             this.$refs.detailPop?.close()
             this.$refs.settingPop?.close()
+            this.$refs.swichWeekPop?.close()
+        },
+        backToCurrentWeek() {
+            this.slideNowWeek()
+        },
+        swichStage(xnm, xqm) {
+            this.xnm = xnm
+            this.xqm = xqm
+            uni.setStorageSync('course_stage', { xnm, xqm })
+            this.getData()
+            this.updateWeekDates()
+            this.slideNowWeek()
+        },
+        initStage() {
+            const stage = uni.getStorageSync('course_stage')
+            if (stage) {
+                this.xnm = stage.xnm
+                this.xqm = stage.xqm
+            } else {
+                const nowStage = this.getNowStage()
+                this.xnm = nowStage.xnm
+                this.xqm = nowStage.xqm
+                uni.setStorageSync('course_stage', nowStage)
+            }
+        },
+        getNowStage() {
+            let nowYear = new Date().getFullYear()
+            let nowMonth = new Date().getMonth() + 1
+
+            if (nowMonth < 8) nowYear--
+            if (nowMonth < 2 || nowMonth >= 8) {
+                return { xnm: nowYear.toString(), xqm: '3' }
+            } else {
+                return { xnm: nowYear.toString(), xqm: '12' }
+            }
+        },
+        navigateToStage() {
+            uni.navigateTo({ url: '/pages/stage/stage?xnm=' + this.xnm + '&xqm=' + this.xqm })
+            this.$refs.settingPop?.close()
+        },
+        shouldShowCourse(course, weekIndex) {
+            const overlappingCourses = this.findOverlappingCourses(course, weekIndex);
+            if (overlappingCourses.length <= 1) return true;
+            
+            // 获取当前时间段的所有课程
+            const sortedCourses = [...overlappingCourses].sort((a, b) => {
+                // 优先显示本周课程
+                if (this.indexOf(a.zcd, weekIndex) && !this.indexOf(b.zcd, weekIndex)) return -1;
+                if (!this.indexOf(a.zcd, weekIndex) && this.indexOf(b.zcd, weekIndex)) return 1;
+                
+                // 其次显示下周课程
+                if (this.indexOf(a.zcd, weekIndex + 1) && !this.indexOf(b.zcd, weekIndex + 1)) return -1;
+                if (!this.indexOf(a.zcd, weekIndex + 1) && this.indexOf(b.zcd, weekIndex + 1)) return 1;
+                
+                // 最后显示非本周课程
+                return a.id - b.id;
+            });
+            
+            // 只显示排序后的第一个课程
+            return course.id === sortedCourses[0].id;
         }
     },
     onShow() {
+    },
+    onLoad(options) {
+        uni.$on('swichStage', this.swichStage)
+        this.initializeDate();
+        this.initStage();
+        this.getData();
+        this.updateWeekDates();
+    },
+    onUnload() {
+        uni.$off('swichStage', this.swichStage)
     },
     onPullDownRefresh() {
         this.update()
@@ -600,10 +733,7 @@ export default {
         this.safeAreaTop = systemInfo.safeAreaInsets?.top || 0;
     },
     mounted() {
-        this.initializeDate();
-        this.getData();
-        this.updateWeekDates();
-        this.getNowWeek();
+        this.slideNowWeek();
     },
     computed: {
         filteredCourseList() {
@@ -618,11 +748,28 @@ export default {
 
 <style scoped>
 .progress-container {
-    position: fixed;
-    top: v-bind('`calc(${paddingTopStyle} + 100px)`');
-    left: 0;
-    right: 0;
-    z-index: 1000;
+    background-color: #fff;
+    border-radius: 24rpx 24rpx 0 0;
+    padding-bottom: 100rpx;
+    box-sizing: border-box;
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 40rpx;
+}
+
+.header-title {
+    font-size: 28rpx;
+    color: #333;
+    font-weight: 500;
+}
+
+.header-action {
+    font-size: 28rpx;
+    color: #2979ff;
 }
 
 .container {
@@ -651,6 +798,14 @@ export default {
     align-items: center;
     justify-content: center;
     flex: 1;
+    min-width: 200rpx;
+}
+
+.week-info {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    margin-right: 4rpx;
 }
 
 .week-list {
@@ -836,6 +991,10 @@ export default {
     box-sizing: border-box;
 }
 
+:deep(.uni-popup) {
+    z-index: 1000 !important;
+}
+
 :deep(.uni-list-item__content-title) {
     font-size: 28rpx !important;
 }
@@ -851,7 +1010,7 @@ export default {
     left: 0;
     right: 0;
     z-index: 101;
-    height: v-bind('`calc(${paddingTopStyle} + 2px)`');
+    height: v-bind('`calc(${paddingTopStyle} + 2000px)`');
     background-color: rgba(0, 0, 0, 0);
 }
 </style>
