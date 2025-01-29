@@ -64,7 +64,7 @@
                     <uni-list-item title="刷新" 
                         clickable
                         :showExtraIcon="true"
-                        :extraIcon="{ type: 'refreshempty', size: '18', color: '#2979ff' }" 
+                        :extraIcon="{ type: 'refreshempty', size: '15', color: '#2979ff' }" 
                         @click="refreshCourse" 
                     />
                     <uni-list-item title="切换学期" clickable @click="navigateToStage" />
@@ -409,7 +409,6 @@ export default {
 
         },
         buildCourseColor() {
-            uni.removeStorageSync('courseColor')
             const courseColor = {};
             let colorIndex = 0;
             const colorListLength = this.colorList.length;
