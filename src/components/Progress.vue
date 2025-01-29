@@ -1,9 +1,6 @@
 <template>
     <view class="progress">
-        <view 
-            class="progress__track"
-            @touchstart="handleTrackClick"
-        >
+        <view class="progress__track">
             <view 
                 class="progress__fill" 
                 :style="{
@@ -68,16 +65,6 @@ export default {
                     .exec()
             })
         },
-        // 点击轨道更新进度
-        async handleTrackClick(e) {
-            const rect = await this.getTrackRect()
-            const offsetX = e.touches[0].clientX - rect.left
-            const percentage = offsetX / rect.width
-            const newValue = Math.round((percentage - 0.05) / 0.9 * (this.max - 1) + 1)
-            const finalValue = Math.max(1, Math.min(this.max, newValue))
-            this.tempValue = finalValue
-            this.$emit('update:value', finalValue)
-        },
         // 开始拖动滑块
         handleThumbStart(e) {
             this.isDragging = true
@@ -88,15 +75,19 @@ export default {
         async handleThumbMove(e) {
             if (!this.isDragging) return
             const rect = await this.getTrackRect()
-            const deltaX = e.touches[0].clientX - this.startX
-            const deltaPercentage = deltaX / rect.width
-            const deltaValue = deltaPercentage / 0.9 * (this.max - 1)
-            const newValue = Math.round(this.startValue + deltaValue)
-            this.tempValue = Math.max(1, Math.min(this.max, newValue))
+            const offsetX = e.touches[0].clientX - rect.left
+            const percentage = offsetX / rect.width
+            const newValue = Math.round((percentage - 0.05) / 0.9 * (this.max - 1) + 1)
+            // 只更新临时值，不触发动画
+            if (this.isDragging) {
+                this.tempValue = Math.max(1, Math.min(this.max, newValue))
+            }
         },
         // 结束拖动
         handleThumbEnd() {
+            if (!this.isDragging) return
             this.isDragging = false
+            // 在松手时更新父组件的值，这时会触发动画
             this.$emit('update:value', this.tempValue)
         }
     },

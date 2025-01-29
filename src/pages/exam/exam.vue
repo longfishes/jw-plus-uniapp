@@ -4,7 +4,7 @@
       <view class="header-left">点击或下拉刷新 <uni-icons type="arrow-right" size="15" color="gray" />
       </view>
       <view class="header-right">
-        <uni-icons type="loop" size="15" color="gray" />
+        <uni-icons type="refreshempty" size="15" color="gray" />
       </view>
     </view>
   </view>

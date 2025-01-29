@@ -61,7 +61,12 @@
         >
             <view class="setting-popup-content">
                 <uni-list class="custom-list" :border="false">
-                    <uni-list-item title="最新课表" clickable @click="newestCourse" />
+                    <uni-list-item title="刷新" 
+                        clickable
+                        :showExtraIcon="true"
+                        :extraIcon="{ type: 'refreshempty', size: '18', color: '#2979ff' }" 
+                        @click="refreshCourse" 
+                    />
                     <uni-list-item title="切换学期" clickable @click="navigateToStage" />
                     <uni-list-item title="关闭当前页面打开新页面" showArrow />
                     <uni-list-item title="打开错误页面(查看控制台)" showArrow />
@@ -392,7 +397,6 @@ export default {
         swiperSwitchWeek(e) {
             if (e.target.source === 'touch') {
                 this.nowWeek = e.detail.current + 1;
-                this.updateWeekDates();
             }
         },
         onTouchStart() {
@@ -645,8 +649,9 @@ export default {
             this.isTriggered = true
             this.update()
         },
-        newestCourse() {
-            console.log('最新课表')
+        refreshCourse() {
+            this.$refs.settingPop?.close()
+            this.update()
         },
         closeMask() {
             this.$refs.detailPop?.close()
@@ -661,7 +666,6 @@ export default {
             this.xqm = xqm
             uni.setStorageSync('course_stage', { xnm, xqm })
             this.getData()
-            this.updateWeekDates()
             this.slideNowWeek()
         },
         initStage() {
@@ -688,8 +692,8 @@ export default {
             }
         },
         navigateToStage() {
-            uni.navigateTo({ url: '/pages/stage/stage?xnm=' + this.xnm + '&xqm=' + this.xqm })
             this.$refs.settingPop?.close()
+            uni.navigateTo({ url: '/pages/stage/stage?xnm=' + this.xnm + '&xqm=' + this.xqm })
         },
         shouldShowCourse(course, weekIndex) {
             const overlappingCourses = this.findOverlappingCourses(course, weekIndex);
@@ -742,6 +746,13 @@ export default {
         paddingTopStyle() {
             return uni.upx2px(70) + this.safeAreaTop + 'px';
         },
+    },
+    watch: {
+        nowWeek: {
+            handler(newVal) {
+                this.updateWeekDates()
+            }
+        }
     }
 }
 </script>
