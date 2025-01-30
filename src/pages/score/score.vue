@@ -66,13 +66,6 @@ export default {
   methods: {
     pickerPopChange(e) {
       this.scollable = !e.show
-      // if (!e.show) {
-      //   if (!this.unsubmitElement) {
-      //     this.submitChange(this.selectedIndex)
-      //   } else {
-      //     this.submitChange(this.unsubmitElement.target.value)
-      //   }
-      // }
     },
     popChange(e) {
       this.scollable = !e.show
@@ -116,7 +109,7 @@ export default {
       this.selectedIndex = newSelectedIndex
     },
     toggle(index) {
-      uni.vibrateShort({type: 'heavy'})
+      uni.vibrateShort({ type: 'heavy' })
       this.gradeItem.list[index].isNew = false
       const ele = this.scoreStore.gradeItem[this.selectedIndex[0]][this.selectedIndex[1]].list[index]
       ele.isNew = false
@@ -132,6 +125,7 @@ export default {
       this.$refs.popup.open('bottom')
     },
     togglePicker() {
+      uni.vibrateShort({ type: 'heavy' })
       this.$refs.pickerPop.open('bottom')
     },
     async query() {
@@ -146,8 +140,8 @@ export default {
       let res = null
       try {
         res = await http({
-        method: 'POST',
-        url: '/grade/option',
+          method: 'POST',
+          url: '/grade/option',
           data: { 'xnm': xnm, 'xqm': xqm }
         }, !isPulldown)
       } finally {
@@ -274,7 +268,7 @@ export default {
     </uni-transition>
 
     <view>
-      <uni-popup ref="popup" background-color="#fff" :safeArea="false" @change="popChange">
+      <uni-popup ref="popup" :safeArea="false" @change="popChange">
         <uni-section :title="selectedName" type="line">
           <view class="detail-popup-content">
             <uni-table border stripe>
@@ -291,7 +285,12 @@ export default {
     </view>
 
     <view>
-      <uni-popup ref="pickerPop" background-color="#fff" :safe-area="false" @change="pickerPopChange">
+      <uni-popup 
+        ref="pickerPop" 
+        
+        :safe-area="false" 
+        @change="pickerPopChange"
+      >
         <view class="popup-content">
           <picker-view ref="pickerView" :immediate-change="true" :value="multiIndex" @pickend="pickend"
             @pickstart="pickstart" @change="bindChange" class="picker-view" indicator-style="height: 50px;">
@@ -375,6 +374,12 @@ export default {
 
 .detail-popup-content {
   padding: 20px;
+}
+
+::v-deep .uni-popup__wrapper {
+  padding-top: 24rpx;
+  border-radius: 24rpx 24rpx 0 0;
+  background-color: #fff !important;
 }
 
 ::v-deep {
