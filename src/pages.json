@@ -23,9 +23,9 @@
 			}
 		},
 		{
-			"path": "pages/find/find",
+			"path": "pages/course/course",
 			"style": {
-				"navigationBarTitleText": "发现",
+				"navigationBarTitleText": "课程表",
 				"enablePullDownRefresh": false,
 				"backgroundColor": "#ffffff",
 				"navigationStyle": "custom"
@@ -53,7 +53,9 @@
 		{
 			"path": "pages/stage/stage",
 			"style": {
-				"navigationBarTitleText": "切换学期"
+				"navigationBarTitleText": "切换学期",
+				"backgroundColor": "#ffffff",
+				"enablePullDownRefresh": true
 			}
 		}
 	],
@@ -84,7 +86,7 @@
 			},
 			{
 				"text": "发现",
-				"pagePath": "pages/find/find",
+				"pagePath": "pages/course/course",
 				"iconPath": "static/tabs/find_default.png",
 				"selectedIconPath": "static/tabs/find_selected.png"
 			},

@@ -77,15 +77,37 @@ export default {
         this.stage = res.data
       } catch (e) {
         this.error = true
+      } finally {
+        uni.stopPullDownRefresh()
+      }
+    },
+    async update() {
+      this.error = false
+      try {
+        const res = await http({
+          method: 'GET',
+          url: '/kb/stage'
+        }, false)
+        this.stage = []
+        setTimeout(() => {
+          this.stage = res.data
+        }, 200)
+      } catch (e) {
+        this.error = true
+      } finally {
+        uni.stopPullDownRefresh()
       }
     },
     retryLoad() {
-      this.getStage()
+      this.update()
     }
   },
   onLoad(options) {
     this.courseStage = options
     this.getStage()
+  },
+  onPullDownRefresh() {
+    this.update()
   }
 }
 </script>

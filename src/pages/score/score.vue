@@ -4,6 +4,7 @@ import { useScoreStore } from '@/stores'
 import { http } from '@/utils/http'
 import GradeList from '@/components/GradeList.vue'
 import Divider from '@/components/Divider.vue'
+import ScoreDetail from '@/components/ScoreDetail.vue'
 
 function round(number) {
   return (Math.round(number * 100) / 100).toFixed(2);
@@ -12,7 +13,8 @@ function round(number) {
 export default {
   components: {
     GradeList,
-    Divider
+    Divider,
+    ScoreDetail
   },
   data() {
     return {
@@ -269,17 +271,7 @@ export default {
 
     <view>
       <uni-popup ref="popup" :safeArea="false" @change="popChange">
-        <uni-section :title="selectedName" type="line">
-          <view class="detail-popup-content">
-            <uni-table border stripe>
-              <uni-tr v-for="(item, index) in truncatedData" :key="index">
-                <uni-td align="center">{{ item.name }}&nbsp;({{ Math.round(item.percent * 100) }}%)</uni-td>
-                <uni-td align="center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ item.score
-                  }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</uni-td>
-              </uni-tr>
-            </uni-table>
-          </view>
-        </uni-section>
+        <ScoreDetail :title="selectedName" :data="truncatedData" />
         <view style="padding: 25rpx;"></view>
       </uni-popup>
     </view>
@@ -370,10 +362,6 @@ export default {
 .item {
   line-height: 100rpx;
   text-align: center;
-}
-
-.detail-popup-content {
-  padding: 20px;
 }
 
 ::v-deep .uni-popup__wrapper {
