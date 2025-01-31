@@ -13,7 +13,8 @@
 			"path": "pages/score/score",
 			"style": {
 				"navigationBarTitleText": "成绩查询",
-				"enablePullDownRefresh": true
+				"enablePullDownRefresh": true,
+				"backgroundColor": "#ffffff"
 			}
 		},
 		{

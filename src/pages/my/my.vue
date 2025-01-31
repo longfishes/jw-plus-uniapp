@@ -9,7 +9,7 @@ const clearData: any = () => {
 }
 
 const onCleanTapped: any = () => {
-  memberStore.clearProfile()
+  uni.clearStorage()
 }
 
 const toLogin: any = () => {

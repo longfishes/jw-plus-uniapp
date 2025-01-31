@@ -5,6 +5,7 @@ import { http } from '@/utils/http'
 import GradeList from '@/components/GradeList.vue'
 import Divider from '@/components/Divider.vue'
 import ScoreDetail from '@/components/ScoreDetail.vue'
+import Statistic from '@/components/Statistic.vue'
 
 function round(number) {
   return (Math.round(number * 100) / 100).toFixed(2);
@@ -14,7 +15,8 @@ export default {
   components: {
     GradeList,
     Divider,
-    ScoreDetail
+    ScoreDetail,
+    Statistic
   },
   data() {
     return {
@@ -248,7 +250,6 @@ export default {
       <view class="uni-input" @tap="showPicker">
         <span class="placeholder">&nbsp;&nbsp;学期</span>&nbsp&nbsp&nbsp|&nbsp&nbsp&nbsp&nbsp;
         <span class="content">{{ multiArray[0][multiIndex[0]] + ' ' + multiArray[1][multiIndex[1]] }}</span>
-        <span v-if="gradeItem.xfjd" style="font-weight: bold;">平均绩点&nbsp;&nbsp;{{ gradeItem.xfjd }}&nbsp;&nbsp;</span>
       </view>
     </view>
     <view class="searchBtn">
@@ -300,10 +301,16 @@ export default {
       </uni-popup>
     </view>
 
+    <Statistic :gradeItem="gradeItem"/>
+
   </view>
 </template>
 
 <style scoped lang="scss">
+:deep(.uni-popup) {
+    z-index: 1000 !important;
+}
+
 .score-page {
   background-color: #fff;
   z-index: -1;

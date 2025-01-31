@@ -53,6 +53,9 @@ importers:
       '@dcloudio/uni-ui':
         specifier: ^1.5.7
         version: 1.5.7
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
       pinia:
         specifier: 2.0.27
         version: 2.0.27(typescript@5.1.6)(vue@3.3.4)

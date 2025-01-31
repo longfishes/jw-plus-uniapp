@@ -164,12 +164,17 @@
     </scroll-view>
 
     <view @tap="closeDetailPop">
-        <uni-popup ref="detailPop" background-color="transparent" @change="detailPopChange" type="center">
+        <uni-popup 
+            ref="detailPop" 
+            background-color="transparent" 
+            @change="detailPopChange" 
+            type="center"
+        >
             <view class="popup-list">
                 <view class="popup-content" v-for="(course, index) in courseDetail" :key="index" :style="{
-        backgroundColor: isCurrentWeekCourse(course.zcd, nowWeek) ?
-            (index === 0 ? courseColor[course.kcmc] : '#dcdcdc') : '#dcdcdc'
-    }">
+                    backgroundColor: isCurrentWeekCourse(course.zcd, nowWeek) ?
+                        (index === 0 ? courseColor[course.kcmc] : '#dcdcdc') : '#dcdcdc'
+                    }">
 
                     <view class="week-tag" v-if="!isCurrentWeekCourse(course.zcd, nowWeek)">
                         {{ indexOf(course.zcd, nowWeek + 1) ? '[下周]' : '[非本周]' }}
@@ -967,7 +972,6 @@ export default {
 }
 
 .setting-popup-content {
-    /* height: 300px; */
     background-color: #fff;
     border-radius: 24rpx 24rpx 0 0;
     padding: 20rpx;
