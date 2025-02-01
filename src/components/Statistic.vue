@@ -116,7 +116,7 @@ export default {
       if (this.isDragging) {
         let newY = this.startPos + deltaY;
         const maxY = this.windowHeight - uni.upx2px(200);  // 底部留出 200rpx
-        const minY = uni.upx2px(100);  // 顶部留出 100rpx
+        const minY = uni.upx2px(250);  // 顶部留出 250rpx
         newY = Math.min(Math.max(newY, minY), maxY);
         this.position.y = newY;
       }

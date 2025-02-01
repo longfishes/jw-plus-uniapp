@@ -16,7 +16,12 @@
                     <text>第{{ nowWeek }}周</text>
                 </view>
                 <uni-icons type="down" size="18" color="#2979ff"
-                    :style="{ transform: showSwitchWeek ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s ease' }"></uni-icons>
+                    :style="{ 
+                        transform: showSwitchWeek ? 
+                        'rotate(180deg)' : 'rotate(0deg)', 
+                        transition: 'transform 0.3s ease' 
+                            }">
+                </uni-icons>
                 <view class="nav-action" @tap.stop="backToCurrentWeek" :style="{
         visibility: getNowWeek() > 0
             && getNowWeek() != nowWeek ? 'visible' : 'hidden',
@@ -52,7 +57,7 @@
     <view>
         <uni-popup ref="settingPop" type="bottom" :safeArea="false" @change="settingPopChange">
             <view class="setting-popup-content">
-                <uni-list class="custom-list" :border="false">
+                <uni-list :border="false">
                     <uni-list-item title="刷新课表" clickable @click="refreshCourse" />
                     <uni-list-item title="切换学期" clickable showArrow @click="navigateToStage" />
                     <uni-list-item title="关闭当前页面打开新页面" showArrow />
@@ -62,28 +67,30 @@
         </uni-popup>
     </view>
 
-    <scroll-view scroll-y="true" refresher-enabled="true" @refresherrefresh="onRefresh"
-        :refresher-triggered="isTriggered" :style="{ paddingTop: paddingTopStyle }">
+    <scroll-view 
+        scroll-y
+        :refresher-enabled="true" 
+        :bounces="true"
+        @refresherrefresh="onRefresh"
+        :refresher-triggered="isTriggered" 
+        :style="{ paddingTop: paddingTopStyle, height: '100vh' }"
+    >
         <view class="container">
             <view class="week-list">
                 <view style="width: 50rpx;"></view>
                 <view class="week-item" v-for="(item, index) in weekDayCount" :key="index">
                     <view class="week-item-inner"
-                        :class="{ 'active': nowMonth == todayMonth && todayDay == weekCalendar[index] }">
+                        :class="{ 'active': isToday(index) }">
                         <text class="week-name">{{ weekIndexText[index] }}</text>
                         <text class="week-date">
                             {{
         // 计算当前日期
         (() => {
-            const day = weekCalendar[index];
-            let month = nowMonth;
-
-            // 如果是每月的第一天，检查是否需要增加月份
-            if (day === 1) {
-                month = (nowMonth === 12) ? 1 : (nowMonth + 1);
-            }
-
-            // 返回格式化的日期
+            const startDate = new Date(this.startDate);
+            const addTime = (this.nowWeek - 1) * 7 * 24 * 60 * 60 * 1000;
+            const currentDate = new Date(startDate.getTime() + addTime + index * 24 * 60 * 60 * 1000);
+            const month = currentDate.getMonth() + 1;
+            const day = currentDate.getDate();
             return `${month}/${day}`;
         })()
     }}
@@ -687,6 +694,16 @@ export default {
 
             // 只显示排序后的第一个课程
             return course.id === sortedCourses[0].id;
+        },
+        isToday(index) {
+            const startDate = new Date(this.startDate);
+            const addTime = (this.nowWeek - 1) * 7 * 24 * 60 * 60 * 1000;
+            const currentDate = new Date(startDate.getTime() + addTime + index * 24 * 60 * 60 * 1000);
+            
+            const today = new Date();
+            return currentDate.getFullYear() === today.getFullYear() &&
+                   currentDate.getMonth() === today.getMonth() &&
+                   currentDate.getDate() === today.getDate();
         }
     },
     onShow() {
@@ -791,6 +808,8 @@ export default {
 }
 
 .week-info {
+    font-size: 32rpx;
+    letter-spacing: 5rpx;
     display: flex;
     align-items: center;
     white-space: nowrap;
@@ -984,11 +1003,12 @@ export default {
 }
 
 :deep(.uni-list-item__content-title) {
-    font-size: 28rpx !important;
+    font-size: 30rpx !important;
+    padding-left: 15rpx;
 }
 
 :deep(.uni-list-item) {
-    padding: 12rpx 0 !important;
+    padding: 10rpx 0 !important;
 }
 
 .mask {

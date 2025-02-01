@@ -13,8 +13,9 @@
 			"path": "pages/score/score",
 			"style": {
 				"navigationBarTitleText": "成绩查询",
-				"enablePullDownRefresh": true,
-				"backgroundColor": "#ffffff"
+				"enablePullDownRefresh": false,
+				"backgroundColor": "#ffffff",
+				"navigationStyle": "custom"
 			}
 		},
 		{

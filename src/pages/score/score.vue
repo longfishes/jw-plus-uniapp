@@ -20,6 +20,7 @@ export default {
   },
   data() {
     return {
+      safeAreaTop: 0,
       scollable: true,
       data: [],
       selectedName: '',
@@ -28,13 +29,17 @@ export default {
         xfjd: ''
       },
       selectedIndex: [0, 0],
+      isTriggered: false,
+      isPickerOpen: false,
     }
   },
   computed: {
     result() {
       return this.calcPrefer()
     },
-
+    paddingTopStyle() {
+      return uni.upx2px(70) + this.safeAreaTop + 'px';
+    },
     truncatedData() {
       return this.data.length < 3 ? this.data : this.data.slice(0, this.data.length - 1)
     },
@@ -68,8 +73,13 @@ export default {
     }
   },
   methods: {
+    onRefresh() {
+      this.isTriggered = true
+      this.query()
+    },
     pickerPopChange(e) {
       this.scollable = !e.show
+      this.isPickerOpen = e.show
     },
     popChange(e) {
       this.scollable = !e.show
@@ -149,7 +159,7 @@ export default {
           data: { 'xnm': xnm, 'xqm': xqm }
         }, !isPulldown)
       } finally {
-        uni.stopPullDownRefresh();
+        this.isTriggered = false
         uni.hideLoading();
       }
 
@@ -179,9 +189,6 @@ export default {
         }, 200);
       }
     },
-    showPicker() {
-      this.togglePicker()
-    },
     submitChange(value) {
       if (!this.multiArray[0][value[0]] || !this.multiArray[1][value[1]]) {
         value = this.selectedIndex
@@ -191,6 +198,7 @@ export default {
       this.scoreStore.setIndexes(this.selectedIndex)
       if (!this.scoreStore.gradeItem[value[0]][value[1]]) {
         this.gradeItem = { list: [], xfjd: '' }
+        this.query()
       } else {
         this.gradeItem = { list: [], xfjd: '' }
         setTimeout(() => {
@@ -216,6 +224,8 @@ export default {
   created() {
     this.memberStore = useMemberStore()
     this.scoreStore = useScoreStore()
+    const systemInfo = uni.getSystemInfoSync();
+    this.safeAreaTop = systemInfo.safeAreaInsets?.top || 0;
   },
   onShow() {
     if (this.scoreStore.selectedIndexes.length != 2) {
@@ -234,10 +244,11 @@ export default {
       this.updateSelectedIndex()
       this.scoreStore.selectedIndexes = this.selectedIndex
     }
+
+    if (this.gradeItem.list.length == 0) {
+      this.query()
+    }
   },
-  onPullDownRefresh() {
-    this.queryOptions(true)
-  }
 }
 </script>
 
@@ -245,68 +256,129 @@ export default {
 <template>
   <page-meta :page-style="'overflow:' + (scollable ? 'visible' : 'hidden')"></page-meta>
 
-  <view class="score-page">
-    <view class="query-picker">
-      <view class="uni-input" @tap="showPicker">
-        <span class="placeholder">&nbsp;&nbsp;学期</span>&nbsp&nbsp&nbsp|&nbsp&nbsp&nbsp&nbsp;
-        <span class="content">{{ multiArray[0][multiIndex[0]] + ' ' + multiArray[1][multiIndex[1]] }}</span>
-      </view>
-    </view>
-    <view class="searchBtn">
-      <button style="color: #2979ff;border-color: #2979ff" plain size="" @click="query()">查询</button>
-    </view>
-
-    <view class="list">
-      <uni-transition ref="ani" :mode-class="['fade', 'slide-right']" :show="gradeItem.list[0] != undefined">
-        <view style="margin-top: 30rpx;">
-          <GradeList v-for="(item, index) in gradeItem.list" :key="index" :kcmc="item.kcmc" :isNew="item.isNew"
-            :message="item.kcxzmc + ' · ' + item.xf + '学分 · ' + item.js + (item.khfs == null ? '' : (' · ' + item.khfs))"
-            :cj="item.cj" :jd="item.jd" @tap="toggle(index)" />
+  <view 
+    class="navbar" 
+    @touchmove.prevent
+    :style="{ paddingTop: safeAreaTop + 'px', 
+      position: 'fixed', top: 0, left: 0, right: 0, 
+      zIndex: 100, 
+      backgroundColor: '#fff' }"
+  >
+    <view class="header">
+        <uni-icons type="refreshempty" color="#2979ff" size="30" @tap="query()"></uni-icons>
+        <view class="spacer"></view>
+        <view class="center-content" @tap="togglePicker">
+            <view class="week-info">
+                <text>{{ multiArray[0][multiIndex[0]] + ' ' + multiArray[1][multiIndex[1]] }}</text>
+            </view>
+            <uni-icons type="down" size="18" color="#2979ff"
+                :style="{ transform: isPickerOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s ease' }"></uni-icons>
         </view>
+        <view class="spacer"></view>
+        <uni-icons type="refreshempty" size="30" style="visibility: hidden;"></uni-icons>
+    </view>
+  </view>
+
+  <scroll-view 
+    scroll-y
+    :refresher-enabled="true" 
+    :bounces="true"
+    @refresherrefresh="onRefresh"
+    :refresher-triggered="isTriggered" 
+    :style="{ paddingTop: paddingTopStyle, height: '100vh' }"
+  >
+    <view class="score-page">
+
+      <view class="segmented-control-container">
+        <uni-segmented-control 
+          :values="['选项1', '选项2']" 
+          :current="0"
+          style-type="button"
+          @change=""
+        />
+      </view>
+
+      <view class="list">
+        <uni-transition ref="ani" :mode-class="['fade', 'slide-right']" :show="gradeItem.list[0] != undefined">
+          <view style="margin-top: 30rpx;">
+            <GradeList v-for="(item, index) in gradeItem.list" :key="index" :kcmc="item.kcmc" :isNew="item.isNew"
+              :message="item.kcxzmc + ' · ' + item.xf + '学分 · ' + item.js + (item.khfs == null ? '' : (' · ' + item.khfs))"
+              :cj="item.cj" :jd="item.jd" @tap="toggle(index)" />
+          </view>
+        </uni-transition>
+      </view>
+
+      <uni-transition ref="ani" :mode-class="['fade', 'slide-right']" :show="gradeItem.list[0] != undefined">
+        <Divider text="暂无更多数据" v-if="gradeItem.list[0]" />
       </uni-transition>
     </view>
+  </scroll-view>
 
-    <uni-transition ref="ani" :mode-class="['fade', 'slide-right']" :show="gradeItem.list[0] != undefined">
-      <Divider text="暂无更多数据" v-if="gradeItem.list[0]" />
-    </uni-transition>
-
-    <view>
-      <uni-popup ref="popup" :safeArea="false" @change="popChange">
-        <ScoreDetail :title="selectedName" :data="truncatedData" />
-        <view style="padding: 25rpx;"></view>
-      </uni-popup>
-    </view>
-
-    <view>
-      <uni-popup 
-        ref="pickerPop" 
-        
-        :safe-area="false" 
-        @change="pickerPopChange"
-      >
-        <view class="popup-content">
-          <picker-view ref="pickerView" :immediate-change="true" :value="multiIndex" @pickend="pickend"
-            @pickstart="pickstart" @change="bindChange" class="picker-view" indicator-style="height: 50px;">
-            <picker-view-column>
-              <view class="item" v-for="(item, index) in multiArray[0]" :key="index">{{ item }}</view>
-            </picker-view-column>
-            <picker-view-column>
-              <view class="item" v-for="(item, index) in multiArray[1]" :key="index">{{ item }}</view>
-            </picker-view-column>
-          </picker-view>
-        </view>
-        <view class="popUpBtn">
-          <button style="color: #2979ff;border-color: #2979ff" plain @click="submitBnclicked">确定</button>
-        </view>
-      </uni-popup>
-    </view>
-
-    <Statistic :gradeItem="gradeItem"/>
-
+  <view>
+    <uni-popup ref="popup" :safeArea="false" @change="popChange">
+      <ScoreDetail :title="selectedName" :data="truncatedData" />
+      <view style="padding: 25rpx;"></view>
+    </uni-popup>
   </view>
+
+  <view>
+    <uni-popup 
+      ref="pickerPop" 
+      :safe-area="false" 
+      @change="pickerPopChange"
+    >
+      <view>
+        <picker-view ref="pickerView" :immediate-change="true" :value="multiIndex" @pickend="pickend"
+          @pickstart="pickstart" @change="bindChange" class="picker-view" indicator-style="height: 50px;">
+          <picker-view-column>
+            <view class="item" v-for="(item, index) in multiArray[0]" :key="index">{{ item }}</view>
+          </picker-view-column>
+          <picker-view-column>
+            <view class="item" v-for="(item, index) in multiArray[1]" :key="index">{{ item }}</view>
+          </picker-view-column>
+        </picker-view>
+      </view>
+      <view class="popUpBtn">
+        <button style="color: #2979ff;border-color: #2979ff" plain @click="submitBnclicked">确定</button>
+      </view>
+    </uni-popup>
+  </view>
+
+  <Statistic :gradeItem="gradeItem"/>
+
 </template>
 
 <style scoped lang="scss">
+.header {
+    height: 70rpx;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20rpx;
+    font-size: 32rpx;
+    color: #333;
+}
+
+.spacer {
+    flex: 1;
+}
+
+.center-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    min-width: 200rpx;
+}
+
+.week-info {
+    font-size: 32rpx;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    margin-right: 4rpx;
+}
+
 :deep(.uni-popup) {
     z-index: 1000 !important;
 }
@@ -316,49 +388,12 @@ export default {
   z-index: -1;
 }
 
-.searchBtn {
-  margin-top: 50rpx;
-  margin-left: 50rpx;
-  margin-right: 50rpx;
+.segmented-control-container {
+  padding: 50rpx 30rpx 0 30rpx;
 }
 
 .popUpBtn {
   padding: 50rpx 50rpx 100rpx 50rpx;
-}
-
-.query-picker {
-  display: inline-block;
-  width: auto;
-}
-
-.uni-input {
-  display: flex;
-  align-items: center;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 8px 12px;
-  margin-top: 50rpx;
-  margin-left: 50rpx;
-  margin-right: 50rpx;
-  width: 650rpx;
-  background-color: #f9f9f9;
-  font-size: 14px;
-  color: #aaa;
-  box-sizing: border-box;
-}
-
-.uni-input .placeholder {
-  font-weight: bold;
-  margin-right: 4px;
-  white-space: nowrap;
-}
-
-.uni-input .content {
-  flex: 1;
-  text-align: left;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .picker-view {
