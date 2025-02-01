@@ -82,10 +82,10 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px;
+    padding: 16rpx 20rpx;
     border: 1px solid;
-    border-radius: 8px;
-    margin: 15px;
+    border-radius: 16rpx;
+    margin: 30rpx;
 }
 
 .left-content {
@@ -95,20 +95,20 @@ export default {
 }
 
 .kcmc {
-    font-size: 20px;
+    font-size: 40rpx;
     color: black;
     text-align: left;
 }
 
 .message {
-    font-size: 12px;
+    font-size: 24rpx;
     color: gray;
     text-align: left;
-    margin-top: 5px;
+    margin-top: 10rpx;
 }
 
 .right-content {
-    width: 120px;
+    width: 240rpx;
     display: flex;
     flex-direction: column;
     align-items: flex-end;

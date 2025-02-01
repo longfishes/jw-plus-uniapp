@@ -4,7 +4,7 @@
       <view class="header-left">点击或下拉刷新 <uni-icons type="arrow-right" size="15" color="gray" />
       </view>
       <view class="header-right">
-        <uni-icons type="refreshempty" size="15" color="gray" />
+        <uni-icons type="refreshempty" size="18" color="gray" />
       </view>
     </view>
   </view>
@@ -19,7 +19,7 @@
         </uni-section>
       </view>
       <Divider text="暂无更多数据" />
-      <view style="height: 10px;"></view>
+      <view style="height: 20rpx;"></view>
     </view>
   </uni-transition>
 </template>
@@ -129,19 +129,19 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 15px;
-  margin: 15px;
-  border: 1px solid #2979ff;
-  border-radius: 8px;
+  padding: 20rpx 24rpx;
+  margin: 30rpx;
+  border: 2rpx solid #2979ff;
+  border-radius: 16rpx;
 }
 
 .header-left {
-  font-size: 14px;
+  font-size: 28rpx;
   color: gray;
 }
 
 .header-right {
-  width: 20px;
-  height: 20px;
+  width: 44rpx;
+  height: 44rpx;
 }
 </style>

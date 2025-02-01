@@ -49,7 +49,8 @@
 			"path": "pages/exam/exam",
 			"style": {
 				"navigationBarTitleText": "考试日程",
-				"enablePullDownRefresh": true
+				"enablePullDownRefresh": true,
+				"backgroundColor": "#ffffff"
 			}
 		},
 		{
