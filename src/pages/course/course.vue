@@ -180,7 +180,7 @@
             <view class="popup-list">
                 <view class="popup-content" v-for="(course, index) in courseDetail" :key="index" :style="{
                     backgroundColor: isCurrentWeekCourse(course.zcd, nowWeek) ?
-                        (index === 0 ? courseColor[course.kcmc] : '#dcdcdc') : '#dcdcdc'
+                        courseColor[course.kcmc] : '#dcdcdc'
                     }">
 
                     <view class="week-tag" v-if="!isCurrentWeekCourse(course.zcd, nowWeek)">

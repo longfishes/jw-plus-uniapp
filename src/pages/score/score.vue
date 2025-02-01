@@ -31,6 +31,7 @@ export default {
       selectedIndex: [0, 0],
       isTriggered: false,
       isPickerOpen: false,
+      cardMode: true,
     }
   },
   computed: {
@@ -73,6 +74,9 @@ export default {
     }
   },
   methods: {
+    segCtrlChange(e) {
+      this.cardMode = e.currentIndex == 0
+    },
     onRefresh() {
       this.isTriggered = true
       this.query()
@@ -291,26 +295,50 @@ export default {
 
       <view class="segmented-control-container">
         <uni-segmented-control 
-          :values="['选项1', '选项2']" 
+          :values="['卡片', '列表']" 
           :current="0"
-          style-type="button"
-          @change=""
+          @clickItem="segCtrlChange"
         />
       </view>
 
       <view class="list">
-        <uni-transition ref="ani" :mode-class="['fade', 'slide-right']" :show="gradeItem.list[0] != undefined">
+        <uni-transition 
+          :mode-class="['fade', 'slide-right']" 
+          :show="cardMode && gradeItem.list[0] != undefined"
+          v-if="cardMode"
+        >
           <view style="margin-top: 30rpx;">
             <GradeList v-for="(item, index) in gradeItem.list" :key="index" :kcmc="item.kcmc" :isNew="item.isNew"
               :message="item.kcxzmc + ' · ' + item.xf + '学分 · ' + item.js + (item.khfs == null ? '' : (' · ' + item.khfs))"
               :cj="item.cj" :jd="item.jd" @tap="toggle(index)" />
           </view>
+          <Divider v-if="gradeItem.list[0] != undefined" text="暂无更多数据" />
+        </uni-transition>
+        <uni-transition 
+          :mode-class="['fade', 'slide-right']" 
+          :show="!cardMode && gradeItem.list[0] != undefined"
+          v-if="gradeItem.list[0] != undefined"
+        >
+          <view style="margin: 30rpx;">
+            <uni-table stripe emptyText="暂无数据">
+              <uni-tr>
+                <uni-th align="left" width="320rpx">课程名称</uni-th>
+                <uni-th align="center" width="100rpx">学分</uni-th>
+                <uni-th align="center" width="100rpx">成绩</uni-th>
+                <uni-th align="center" width="100rpx">绩点</uni-th>
+              </uni-tr>
+              <uni-tr v-for="(item, index) in gradeItem.list" :key="index" @tap="toggle(index)">
+                <uni-td align="left">{{ item.kcmc }}</uni-td>
+                <uni-td align="center">{{ item.xf }}</uni-td>
+                <uni-td align="center">{{ item.cj }}</uni-td>
+                <uni-td align="center">{{ item.jd }}</uni-td>
+              </uni-tr>
+            </uni-table>
+          </view>
+          <Divider v-if="gradeItem.list[0] != undefined" text="暂无更多数据" />
         </uni-transition>
       </view>
 
-      <uni-transition ref="ani" :mode-class="['fade', 'slide-right']" :show="gradeItem.list[0] != undefined">
-        <Divider text="暂无更多数据" v-if="gradeItem.list[0]" />
-      </uni-transition>
     </view>
   </scroll-view>
 
@@ -414,5 +442,36 @@ export default {
 
 ::v-deep {
   overflow-x: hidden;
+}
+
+:deep(.uni-table) {
+  border: none !important;
+}
+
+:deep(.uni-table-th) {
+  font-size: 32rpx;
+  padding: 12rpx 20rpx;
+  padding-bottom: 20rpx;
+  background-color: transparent;
+  font-weight: normal !important;
+  border: none !important;
+}
+
+:deep(.uni-table-td) {
+  font-size: 28rpx;
+  padding: 12rpx 16rpx;
+  border: none !important;
+}
+
+:deep(.uni-table-tr:first-child) {
+  margin-bottom: 10rpx;
+}
+
+:deep(.uni-table-tr:nth-child(2n)) {
+  background-color: #f5f5f5 !important;
+}
+
+:deep(.uni-table-tr:nth-child(2n+1)) {
+  background-color: #ffffff !important;
 }
 </style>
