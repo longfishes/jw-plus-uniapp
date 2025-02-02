@@ -283,15 +283,15 @@ export default {
     </view>
   </view>
 
-  <scroll-view 
+  <!-- <scroll-view 
     scroll-y
     :refresher-enabled="true" 
     :bounces="true"
     @refresherrefresh="onRefresh"
     :refresher-triggered="isTriggered" 
     :style="{ paddingTop: paddingTopStyle, height: '100vh' }"
-  >
-    <view class="score-page">
+  > -->
+    <view class="score-page" :style="{ paddingTop: paddingTopStyle }">
 
       <view class="segmented-control-container">
         <uni-segmented-control 
@@ -340,7 +340,7 @@ export default {
       </view>
 
     </view>
-  </scroll-view>
+  <!-- </scroll-view> -->
 
   <view>
     <uni-popup ref="popup" :safeArea="false" @change="popChange">
@@ -449,7 +449,7 @@ export default {
 }
 
 :deep(.uni-table-th) {
-  font-size: 32rpx;
+  font-size: 28rpx;
   padding: 12rpx 20rpx;
   padding-bottom: 20rpx;
   background-color: transparent;
