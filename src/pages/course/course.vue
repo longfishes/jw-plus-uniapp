@@ -60,8 +60,8 @@
                 <uni-list :border="false">
                     <uni-list-item title="刷新课表" clickable @click="refreshCourse" />
                     <uni-list-item title="切换学期" clickable showArrow @click="navigateToStage" />
-                    <uni-list-item title="关闭当前页面打开新页面" showArrow />
-                    <uni-list-item title="打开错误页面(查看控制台)" showArrow />
+                    <uni-list-item title="课表外观" clickable showArrow @click="navigateToAppearance" />
+                    <uni-list-item title="测试" clickable showArrow />
                 </uni-list>
             </view>
         </uni-popup>
@@ -105,13 +105,23 @@
                         <view class="course-container">
                             <view class="course-nums">
                                 <view class="course-num" v-for="(num, index) in 10" :key="index">
-                                    <text class="start-time">{{ startTimes[index] }}</text>
+                                    <text class="start-time" 
+                                        :style="{ visibility: showStartTime ? 'visible' : 'hidden' }"
+                                    >{{ startTimes[index] }}</text>
                                     <text class="section-num">{{ index + 1 > 9 ? index + 1 : '0' + (index + 1) }}</text>
-                                    <text class="end-time">{{ endTimes[index] }}</text>
+                                    <text class="end-time" 
+                                        :style="{ visibility: showEndTime ? 'visible' : 'hidden' }"
+                                    >{{ endTimes[index] }}</text>
                                 </view>
                             </view>
 
                             <view class="course-list">
+                                <view class="course-grid" v-show="showGridLines">
+                                    <view class="grid-line" v-for="i in 9" :key="i" 
+                                          :style="{ top: (i - 1) * 120 + 'rpx' }">
+                                    </view>
+                                </view>
+
                                 <template v-for="(course, index) in courseList" :key="index">
                                     <view class="course-item" :style="getCourseStyle(course)">
                                         <template v-if="shouldShowCourse(course, weekIndex + 1)">
@@ -130,11 +140,11 @@
                                             </view>
 
                                             <!-- 下周课程 -->
-                                            <view v-else-if="indexOf(course.zcd, weekIndex + 2)"
+                                            <view v-else-if="showOtherWeek && indexOf(course.zcd, weekIndex + 2)"
                                                 class="course-item__content" :style="{
         backgroundColor: '#dcdcdc',
         zIndex: 2,
-        opacity: 0.8,
+        opacity: 1,
         color: '#989898'
     }" @tap="showCourseDetail(course)">
                                                 <view class="course-tag">[下周]</view><br />
@@ -146,11 +156,11 @@
                                             </view>
 
                                             <!-- 非本周课程 -->
-                                            <view v-else-if="hasLaterWeek(course.zcd, weekIndex + 1)"
+                                            <view v-else-if="showOtherWeek && hasLaterWeek(course.zcd, weekIndex + 1)"
                                                 class="course-item__content" :style="{
         backgroundColor: '#dcdcdc',
         zIndex: 1,
-        opacity: 0.8
+        opacity: 1
     }" @tap="showCourseDetail(course)">
                                                 <view class="course-tag">[非本周]</view><br />
                                                 {{ course.kcmc }}&nbsp;{{ course.xslxbj }}<br />
@@ -212,6 +222,10 @@
 <script>
 import { http } from '@/utils/http'
 import Progress from '@/components/Progress.vue'
+import { useSettingStore } from '@/stores/modules/setting'
+import { defaultStartTimes, defaultEndTimes, defaultColors } from '@/config/defaults'
+
+const settingStore = useSettingStore()
 
 export default {
     components: {
@@ -229,21 +243,21 @@ export default {
             weekIndexText: ['一', '二', '三', '四', '五', '六', '日'],
             nowMonth: new Date().getMonth() + 1,
             courseList: [],
-            colorList: [
-                "#FF9E9E", "#88C4FF", "#FFB562", "#98D8AA", "#B784B7",
-                "#87A2FB", "#96C291", "#FFA1CF", "#89B9AD", "#93BFCF",
-                "#BEA6FF", "#6699FF", "#FFB7B7", "#FFD0A5"
-            ],
+            colorList: defaultColors,
             courseColor: {},
             weekCalendar: [1, 2, 3, 4, 5, 6, 7],
             todayMonth: 0,
             todayDay: 0,
             isSwiping: false,
             courseDetail: [],
-            startTimes: ['08:10', '09:00', '10:15', '11:05', '14:30', '15:20', '16:30', '17:20', '19:30', '20:25'],
-            endTimes: ['08:55', '09:45', '11:00', '11:50', '15:15', '16:05', '17:15', '18:05', '20:15', '21:10'],
+            startTimes: defaultStartTimes,
+            endTimes: defaultEndTimes,
             safeAreaTop: 0,
             isTriggered: false,
+            showGridLines: true,
+            showOtherWeek: true,
+            showStartTime: true,
+            showEndTime: true,
         }
     },
     methods: {
@@ -426,7 +440,7 @@ export default {
             const sectionCount = endSection - startSection + 1;
             const left = `${(parseInt(course.xqj) - 1) * (100 / 7)}%`;
             const top = `${(startSection - 1) * 120}rpx`;
-            const height = `${sectionCount * 120}rpx`;
+            const height = `${sectionCount * 120 - 4}rpx`;
             const width = `${100 / 7}%`;
 
             return {
@@ -436,7 +450,7 @@ export default {
                 width,
                 position: 'absolute',
                 boxSizing: 'border-box',
-                padding: '4rpx'
+                padding: '2rpx 4rpx'
             }
         },
         showCourseDetail(course) {
@@ -674,6 +688,10 @@ export default {
             this.$refs.settingPop?.close()
             uni.navigateTo({ url: '/pages/stage/stage?xnm=' + this.xnm + '&xqm=' + this.xqm })
         },
+        navigateToAppearance() {
+            this.$refs.settingPop?.close()
+            uni.navigateTo({ url: '/pages/appearance/appearance' })
+        },
         shouldShowCourse(course, weekIndex) {
             const overlappingCourses = this.findOverlappingCourses(course, weekIndex);
             if (overlappingCourses.length <= 1) return true;
@@ -704,19 +722,36 @@ export default {
             return currentDate.getFullYear() === today.getFullYear() &&
                    currentDate.getMonth() === today.getMonth() &&
                    currentDate.getDate() === today.getDate();
-        }
+        },
+        initializeSettings() {
+            const settings = settingStore.settings
+            this.showGridLines = settings.showGridLines
+            this.showOtherWeek = settings.showOtherWeek
+            this.showStartTime = settings.showStartTime
+            this.showEndTime = settings.showEndTime
+            if (settings?.colors.length > 0) {
+                this.colorList = settings.colors
+                this.buildCourseColor()
+            }
+        },
+        swichAppearance() {
+            this.initializeSettings()
+        },
     },
     onShow() {
     },
     onLoad(options) {
         uni.$on('swichStage', this.swichStage)
-        this.initializeDate();
-        this.initStage();
-        this.getData();
-        this.updateWeekDates();
+        uni.$on('swichAppearance', this.swichAppearance)
+        this.initializeSettings()
+        this.initializeDate()
+        this.initStage()
+        this.getData()
+        this.updateWeekDates()
     },
     onUnload() {
         uni.$off('swichStage', this.swichStage)
+        uni.$off('swichAppearance', this.swichAppearance)
     },
     onPullDownRefresh() {
         this.update()
@@ -912,11 +947,28 @@ export default {
     height: 1200rpx;
 }
 
+.course-grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 0;
+}
+
+.grid-line {
+    position: absolute;
+    width: 100%;
+    border-bottom: 1px dashed #ebebeb;
+    height: 120rpx;
+}
+
 .course-item {
     position: absolute;
     box-sizing: border-box;
     padding: 4rpx;
     pointer-events: none;
+    z-index: 2;
 }
 
 .course-item__content {
@@ -930,6 +982,7 @@ export default {
     position: relative;
     pointer-events: auto;
     overflow: hidden;
+    z-index: 3;
 }
 
 .popup-content {

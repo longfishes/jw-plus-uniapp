@@ -60,6 +60,22 @@
 				"backgroundColor": "#ffffff",
 				"enablePullDownRefresh": true
 			}
+		},
+		{
+			"path": "pages/appearance/appearance",
+			"style": {
+				"navigationBarTitleText": "课表外观",
+				"enablePullDownRefresh": false,
+				"backgroundColor": "#f5f5f5"
+			}
+		},
+		{
+			"path": "pages/color/color",
+			"style": {
+				"navigationBarTitleText": "课程色块",
+				"enablePullDownRefresh": false,
+				"backgroundColor": "#ffffff"
+			}
 		}
 	],
 	"globalStyle": {
