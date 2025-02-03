@@ -1,4 +1,6 @@
 <template>
+  <page-meta :page-style="'overflow:hidden'"></page-meta>
+
   <ColorPicker
     v-if="show"
     v-model:selectedIndex="selectedIndex"
@@ -24,7 +26,7 @@ export default {
   data() {
     return {
       selectedIndex: -1,
-      colors: defaultColors,
+      colors: [...defaultColors],
       show: false
     }
   },
@@ -43,7 +45,7 @@ export default {
     },
 
     handleReset() {
-      this.colors = defaultColors
+      this.colors = [...defaultColors]
       this.selectedIndex = -1
     },
 

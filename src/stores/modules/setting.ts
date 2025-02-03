@@ -8,6 +8,7 @@ interface Settings {
     showStartTime: boolean  // 显示上课时间
     showEndTime: boolean  // 显示下课时间
     colors: string[]  // 课程颜色
+    backgroundIndex: number  // 背景图片索引
 }
 
 export const useSettingStore = defineStore(
@@ -18,7 +19,8 @@ export const useSettingStore = defineStore(
             showOtherWeek: true,  // 默认显示非本周课程
             showStartTime: true,  // 默认显示上课时间
             showEndTime: true,  // 默认显示下课时间
-            colors: defaultColors,
+            colors: [...defaultColors],
+            backgroundIndex: 0,
         })
 
         const set = (newSettings: Partial<Settings>) => {
@@ -34,7 +36,8 @@ export const useSettingStore = defineStore(
                 showOtherWeek: true,
                 showStartTime: true,
                 showEndTime: true,
-                colors: defaultColors,
+                colors: [...defaultColors],
+                backgroundIndex: 0,
             }
         }
 

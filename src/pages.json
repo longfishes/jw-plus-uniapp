@@ -76,6 +76,13 @@
 				"enablePullDownRefresh": false,
 				"backgroundColor": "#ffffff"
 			}
+		},
+		{
+			"path": "pages/background/background",
+			"style": {
+				"navigationBarTitleText": "背景设置",
+				"backgroundColor": "#f5f5f5"
+			}
 		}
 	],
 	"globalStyle": {

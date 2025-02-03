@@ -75,7 +75,7 @@
         :refresher-triggered="isTriggered" 
         :style="{ paddingTop: paddingTopStyle, height: '100vh' }"
     >
-        <view class="container">
+        <view class="container" :style="backgroundList[backgroundIndex]">
             <view class="week-list">
                 <view style="width: 50rpx;"></view>
                 <view class="week-item" v-for="(item, index) in weekDayCount" :key="index">
@@ -130,7 +130,7 @@
                                                 :style="{
         backgroundColor: courseColor[course.kcmc],
         zIndex: 3,
-        opacity: 1
+        opacity: opacityList[backgroundIndex]
     }" @tap="showCourseDetail(course)">
                                                 {{ course.kcmc }}&nbsp;{{ course.xslxbj }}<br />
                                                 <view class="location">@{{ course.cdmc }}</view>
@@ -144,7 +144,7 @@
                                                 class="course-item__content" :style="{
         backgroundColor: '#dcdcdc',
         zIndex: 2,
-        opacity: 1,
+        opacity: opacityList[backgroundIndex],
         color: '#989898'
     }" @tap="showCourseDetail(course)">
                                                 <view class="course-tag">[下周]</view><br />
@@ -160,7 +160,7 @@
                                                 class="course-item__content" :style="{
         backgroundColor: '#dcdcdc',
         zIndex: 1,
-        opacity: 1
+        opacity: opacityList[backgroundIndex]
     }" @tap="showCourseDetail(course)">
                                                 <view class="course-tag">[非本周]</view><br />
                                                 {{ course.kcmc }}&nbsp;{{ course.xslxbj }}<br />
@@ -223,7 +223,15 @@
 import { http } from '@/utils/http'
 import Progress from '@/components/Progress.vue'
 import { useSettingStore } from '@/stores/modules/setting'
-import { defaultStartTimes, defaultEndTimes, defaultColors } from '@/config/defaults'
+import { 
+    defaultStartTimes, 
+    defaultEndTimes, 
+    defaultColors, 
+} from '@/config/defaults'
+import { 
+    backgroundList, 
+    opacityList 
+} from '@/config/background'
 
 const settingStore = useSettingStore()
 
@@ -243,7 +251,7 @@ export default {
             weekIndexText: ['一', '二', '三', '四', '五', '六', '日'],
             nowMonth: new Date().getMonth() + 1,
             courseList: [],
-            colorList: defaultColors,
+            colorList: [...defaultColors],
             courseColor: {},
             weekCalendar: [1, 2, 3, 4, 5, 6, 7],
             todayMonth: 0,
@@ -258,6 +266,9 @@ export default {
             showOtherWeek: true,
             showStartTime: true,
             showEndTime: true,
+            backgroundIndex: 0, // 0: 默认背景
+            opacityList: opacityList,
+            backgroundList: backgroundList
         }
     },
     methods: {
@@ -729,6 +740,7 @@ export default {
             this.showOtherWeek = settings.showOtherWeek
             this.showStartTime = settings.showStartTime
             this.showEndTime = settings.showEndTime
+            this.backgroundIndex = settings.backgroundIndex
             if (settings?.colors.length > 0) {
                 this.colorList = settings.colors
                 this.buildCourseColor()
@@ -816,7 +828,7 @@ export default {
 .container {
     display: flex;
     flex-direction: column;
-    height: 100%;
+    height: 1320rpx;
 }
 
 .header {
@@ -854,6 +866,8 @@ export default {
 .week-list {
     display: flex;
     align-items: center;
+    /* 毛玻璃 */
+    /* backdrop-filter: blur(5px); */
 }
 
 .week-item {
@@ -905,6 +919,7 @@ export default {
 
 .course-nums {
     width: 50rpx;
+    height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;

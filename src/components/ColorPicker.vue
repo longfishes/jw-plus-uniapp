@@ -18,12 +18,38 @@
           </view>
         </template>
         <view 
+          v-if="colors.length < 20"
           class="color-block color-block--empty" 
           @tap="$emit('add')"
         >
           <uni-icons type="plusempty" color="#2979ff" size="24" />
         </view>
       </view>
+    </view>
+
+    <!-- 调色板组件 -->
+    <uni-popup 
+      ref="colorPalette" 
+      type="bottom"
+      :safeArea="false"
+      :style="{ paddingBottom: '120rpx' }"
+      @maskClick="handleMaskClick"
+    >
+      <ColorPalette
+        ref="palette"
+        :model-value="colors[selectedIndex]"
+        @update:modelValue="handleUpdateModelValue"
+        @close="handleClose"
+      />
+    </uni-popup>
+
+    <view class="current-color-display" @tap="showColorPalette">
+      <text class="color-hex">{{ colors[selectedIndex] || '#000000' }}</text>
+      <view 
+        class="color-preview" 
+        :class="{ 'color-preview--empty': selectedIndex === -1 }"
+        :style="selectedIndex !== -1 ? { backgroundColor: colors[selectedIndex] } : {}"
+      ></view>
     </view>
 
     <!-- 操作栏 -->
@@ -42,7 +68,12 @@
 </template>
 
 <script>
+import ColorPalette from '@/components/ColorPalette.vue'
+
 export default {
+  components: {
+    ColorPalette
+  },
   name: 'ColorPicker',
   
   props: {
@@ -56,13 +87,52 @@ export default {
     }
   },
 
+  data() {
+    return {
+      currentColor: '#4A90E2'
+    }
+  },
+
   methods: {
+    handleClose() {
+      this.$refs.colorPalette.close()
+    },
+    handleUpdateModelValue(color) {
+      if (this.selectedIndex !== -1) {
+        this.colors[this.selectedIndex] = color
+      }
+    },
     selectColor(index) {
       if (index === this.selectedIndex) {
         this.$emit('update:selectedIndex', -1)
       } else {
         this.$emit('update:selectedIndex', index)
+        this.currentColor = this.colors[index]
       }
+    },
+
+    showColorPalette() {
+        if (this.selectedIndex === -1) return
+        this.$refs.colorPalette.open()
+    },
+
+    handleMaskClick() {
+      this.$refs.palette.onCancel()
+    },
+
+  },
+
+  watch: {
+    selectedIndex(newVal) {
+      if (newVal !== -1) {
+        this.currentColor = this.colors[newVal]
+      }
+    }
+  },
+
+  computed: {
+    canAddMore() {
+      return this.colors.length < 20 // 5列 * 4行 = 20个色块
     }
   }
 }
@@ -70,6 +140,11 @@ export default {
 
 <style scoped>
 .color-picker-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background-color: #ffffff;
 }
 
@@ -160,5 +235,35 @@ export default {
 .color-block--empty .uni-icons {
     position: relative;
     z-index: 1;
+}
+
+/* 修改当前颜色显示区域的样式 */
+.current-color-display {
+  position: fixed;
+  bottom: 400rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 20rpx 30rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.color-hex {
+  font-size: 24rpx;
+  color: #666666;
+}
+
+.color-preview {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 8rpx;
+  border: 2rpx solid #e0e0e0;
+}
+
+.color-preview--empty {
+  border: 4rpx dashed #2979ff;
+  background-color: transparent !important;
 }
 </style>

@@ -1,26 +1,38 @@
 <template>
   <view class="appearance" v-if="show">
+    <view class="divider"></view>
     <uni-list>
+      <uni-list-item title="课表背景设置" clickable showArrow @click="switchBackground"/>
       <uni-list-item title="课程色块设置" clickable showArrow @click="navigateToColor"/>
-      <view class="divider"></view>
+    </uni-list>
+    <view class="divider"></view>
+    <uni-list>
       <uni-list-item title="显示网格辅助线">
-      <template v-slot:footer>
-        <switch color="#2979ff" :checked="showGridLines" @change="swichGridLines" />
-      </template>
+        <template v-slot:footer>
+          <view class="switch-container">
+            <switch color="#2979ff" :checked="showGridLines" @change="swichGridLines" />
+          </view>
+        </template>
       </uni-list-item>
       <uni-list-item title="显示非本周课程">
         <template v-slot:footer>
-          <switch color="#2979ff" :checked="showOtherWeek" @change="swichOtherWeek" />
+          <view class="switch-container">
+            <switch color="#2979ff" :checked="showOtherWeek" @change="swichOtherWeek" />
+          </view>
         </template>
       </uni-list-item>
       <uni-list-item title="显示上课时间">
         <template v-slot:footer>
-          <switch color="#2979ff" :checked="showStartTime" @change="swichStartTime" />
+          <view class="switch-container">
+            <switch color="#2979ff" :checked="showStartTime" @change="swichStartTime" />
+          </view>
         </template>
       </uni-list-item>
       <uni-list-item title="显示下课时间">
         <template v-slot:footer>
-          <switch color="#2979ff" :checked="showEndTime" @change="swichEndTime" />
+          <view class="switch-container">
+            <switch color="#2979ff" :checked="showEndTime" @change="swichEndTime" />
+          </view>
         </template>
       </uni-list-item>
     </uni-list>
@@ -51,71 +63,80 @@ export default {
   mounted() {
     this.show = true
   },
+  onHide() {
+    this.submit()
+  },
+  onUnload() {
+    this.submit()
+  },
   methods: {
+    submit() {
+      settingStore.set({
+        showGridLines: this.showGridLines,
+        showOtherWeek: this.showOtherWeek,
+        showStartTime: this.showStartTime,
+        showEndTime: this.showEndTime,
+      })
+      uni.$emit('swichAppearance')
+    },
     navigateToColor() {
       uni.navigateTo({
         url: '/pages/color/color'
       })
     },
-    emit() {
-      uni.$emit('swichAppearance')
+    switchBackground() {
+      uni.navigateTo({
+        url: '/pages/background/background'
+      })
     },
     swichGridLines(e) {
-      settingStore.set({ showGridLines: e.detail.value })
-      this.emit()
+      this.showGridLines = e.detail.value
     },
     swichOtherWeek(e) {
-      settingStore.set({ showOtherWeek: e.detail.value })
-      this.emit()
+      this.showOtherWeek = e.detail.value
     },
     swichStartTime(e) {
-      settingStore.set({ showStartTime: e.detail.value })
-      this.emit()
+      this.showStartTime = e.detail.value
     },
     swichEndTime(e) {
-      settingStore.set({ showEndTime: e.detail.value })
-      this.emit()
+      this.showEndTime = e.detail.value
     }
   }
 }
 </script>
 
 <style scoped>
-:deep(.uni-list-item) {
-  height: 100rpx !important;
+:deep(.uni-list) {
+  background-color: #ffffff;
 }
 
-:deep(.uni-list) {
-  border-top: none !important;
+:deep(.uni-list-item) {
+  height: 100rpx;
 }
 
 :deep(.uni-list-item__container) {
-  height: 100% !important;
-  padding: 0 30rpx !important;
+  height: 100%;
+  padding: 0 30rpx;
+  display: flex;
+  align-items: center;
 }
 
 :deep(.uni-list-item__content) {
-  padding: 24rpx 0 !important;
+  flex: none;
+  display: flex;
+  align-items: center;
 }
 
 :deep(.uni-list-item__content-title) {
   font-size: 30rpx;
-  padding-left: 20rpx !important;
-  padding-top: 10rpx !important;
+  padding-left: 20rpx;
+  line-height: 1;
 }
 
-:deep(.uni-list-item__extra) {
-  height: 100% !important;
-  line-height: 100rpx !important;
-  display: flex !important;
-  align-items: center !important;
-}
-
-:deep(switch) {
-  transform: translateY(0) !important;
-  position: relative !important;
-  top: 0 !important;
-  margin: auto 0 !important;
+.switch-container {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .divider {
@@ -126,10 +147,5 @@ export default {
 .appearance {
   background-color: #f5f5f5;
   min-height: 100vh;
-}
-
-:deep(.uni-list) {
-  border-top: none !important;
-  background-color: #ffffff;
 }
 </style>
