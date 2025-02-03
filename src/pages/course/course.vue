@@ -75,7 +75,14 @@
         :refresher-triggered="isTriggered" 
         :style="{ paddingTop: paddingTopStyle, height: '100vh' }"
     >
-        <view class="container" :style="backgroundList[backgroundIndex]">
+        <view class="container" 
+            :style="backgroundIndex != -1 
+                ? backgroundList[backgroundIndex] 
+                : { 
+                    backgroundImage: `url(${customImage})`,
+                    backgroundSize: '100% 100%',
+                    backgroundRepeat: 'no-repeat'  
+                }">
             <view class="week-list">
                 <view style="width: 50rpx;"></view>
                 <view class="week-item" v-for="(item, index) in weekDayCount" :key="index">
@@ -130,7 +137,7 @@
                                                 :style="{
         backgroundColor: courseColor[course.kcmc],
         zIndex: 3,
-        opacity: opacityList[backgroundIndex]
+        opacity: backgroundIndex != -1 ? opacityList[backgroundIndex] : 0.8
     }" @tap="showCourseDetail(course)">
                                                 {{ course.kcmc }}&nbsp;{{ course.xslxbj }}<br />
                                                 <view class="location">@{{ course.cdmc }}</view>
@@ -144,7 +151,7 @@
                                                 class="course-item__content" :style="{
         backgroundColor: '#dcdcdc',
         zIndex: 2,
-        opacity: opacityList[backgroundIndex],
+        opacity: backgroundIndex != -1 ? opacityList[backgroundIndex] : 0.8,
         color: '#989898'
     }" @tap="showCourseDetail(course)">
                                                 <view class="course-tag">[下周]</view><br />
@@ -268,7 +275,8 @@ export default {
             showEndTime: true,
             backgroundIndex: 0, // 0: 默认背景
             opacityList: opacityList,
-            backgroundList: backgroundList
+            backgroundList: backgroundList,
+            customImage: ''
         }
     },
     methods: {
@@ -741,6 +749,7 @@ export default {
             this.showStartTime = settings.showStartTime
             this.showEndTime = settings.showEndTime
             this.backgroundIndex = settings.backgroundIndex
+            this.customImage = uni.getStorageSync('customImage') || ''
             if (settings?.colors.length > 0) {
                 this.colorList = settings.colors
                 this.buildCourseColor()

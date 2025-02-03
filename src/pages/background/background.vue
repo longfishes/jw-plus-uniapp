@@ -110,8 +110,24 @@ export default {
       uni.chooseImage({
         count: 1,
         success: (res) => {
-          this.customImage = res.tempFilePaths[0];
-          this.currentIndex = -1;
+          // 上传文件
+          uni.uploadFile({
+            url: '/upload',
+            filePath: res.tempFilePaths[0],
+            name: 'file',
+            success: (result) => {
+              const imageUrl = JSON.parse(result.data).data;
+              uni.setStorageSync('customImage', imageUrl);
+              this.customImage = imageUrl;
+              this.currentIndex = -1;
+            },
+            fail: (error) => {
+              uni.showToast({
+                title: '上传失败',
+                icon: 'none'
+              });
+            }
+          });
         }
       });
     },
@@ -122,6 +138,7 @@ export default {
   },
   onLoad() {
     this.currentIndex = settingStore.settings.backgroundIndex;
+    this.customImage = uni.getStorageSync('customImage');
   },
   mounted() {
     this.show = true;
