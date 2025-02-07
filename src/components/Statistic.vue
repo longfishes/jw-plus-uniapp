@@ -60,8 +60,8 @@ export default {
     }
   },
   mounted() {
-    const systemInfo = uni.getSystemInfoSync();
-    this.windowHeight = systemInfo.windowHeight;
+    const windowInfo = uni.getWindowInfo();
+    this.windowHeight = windowInfo.windowHeight;
     // 转换为 rpx 对应的 px 值
     this.position.y = this.windowHeight - uni.upx2px(200);
     this.isReady = true;

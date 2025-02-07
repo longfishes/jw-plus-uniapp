@@ -80,14 +80,14 @@ export const http = <T>(options: UniApp.RequestOptions, loading: boolean) => {
                     if ((res.data as any).msg == '账号或密码错误！') {
                         uni.showToast({
                             icon: 'error',
-                            title: (res.data as Data<T>).msg || '请求错误',
+                            title: (res.data as Data<T>).msg || '教务系统账号或密码错误',
                         })
                     }
                     else {
                         // 其他错误 -> 根据后端错误信息轻提示
                         uni.showToast({
                             icon: 'none',
-                            title: (res.data as Data<T>).msg || '请求错误',
+                            title: (res.data as Data<T>).msg || '服务器繁忙',
                         })
                     }
                     reject(res)
@@ -97,7 +97,7 @@ export const http = <T>(options: UniApp.RequestOptions, loading: boolean) => {
             fail(err) {
                 uni.showToast({
                     icon: 'none',
-                    title: '网络错误，换个网络试试',
+                    title: '网络连接失败',
                 })
                 reject(err)
             },

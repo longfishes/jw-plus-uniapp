@@ -36,7 +36,8 @@
 		{
 			"path": "pages/category/category",
 			"style": {
-				"navigationBarTitleText": "分类"
+				"navigationBarTitleText": "分类",
+				"navigationBarBackgroundColor": "#993680"
 			}
 		},
 		{

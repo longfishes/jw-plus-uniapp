@@ -1,15 +1,8 @@
 <template>
   <page-meta :page-style="'overflow:hidden'"></page-meta>
 
-  <ColorPicker
-    v-if="show"
-    v-model:selectedIndex="selectedIndex"
-    :colors="colors"
-    @delete="handleDelete"
-    @reset="handleReset"
-    @save="handleSave"
-    @add="handleAdd"
-  />
+  <ColorPicker v-if="show" v-model:selectedIndex="selectedIndex" :colors="colors" @delete="handleDelete"
+    @reset="handleReset" @save="handleSave" @add="handleAdd" />
 </template>
 
 <script>
@@ -22,7 +15,7 @@ export default {
   components: {
     ColorPicker
   },
-  
+
   data() {
     return {
       selectedIndex: -1,
@@ -45,8 +38,16 @@ export default {
     },
 
     handleReset() {
-      this.colors = [...defaultColors]
-      this.selectedIndex = -1
+      uni.showModal({
+        title: '提示',
+        content: '确认还原到默认色块？',
+        success: (res) => {
+          if (res.confirm) {
+            this.colors = [...defaultColors]
+            this.selectedIndex = -1
+          }
+        },
+      })
     },
 
     handleSave() {

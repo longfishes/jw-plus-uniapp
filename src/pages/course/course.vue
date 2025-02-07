@@ -778,8 +778,8 @@ export default {
         this.update()
     },
     created() {
-        const systemInfo = uni.getSystemInfoSync();
-        this.safeAreaTop = systemInfo.safeAreaInsets?.top || 0;
+        const windowInfo = uni.getWindowInfo();
+        this.safeAreaTop = windowInfo.safeAreaInsets?.top || 0;
     },
     mounted() {
         this.slideNowWeek();

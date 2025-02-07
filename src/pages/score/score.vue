@@ -228,8 +228,8 @@ export default {
   created() {
     this.memberStore = useMemberStore()
     this.scoreStore = useScoreStore()
-    const systemInfo = uni.getSystemInfoSync();
-    this.safeAreaTop = systemInfo.safeAreaInsets?.top || 0;
+    const windowInfo = uni.getWindowInfo();
+    this.safeAreaTop = windowInfo.safeAreaInsets?.top || 0;
   },
   onShow() {
     if (this.scoreStore.selectedIndexes.length != 2) {
@@ -260,26 +260,24 @@ export default {
 <template>
   <page-meta :page-style="'overflow:' + (scollable ? 'visible' : 'hidden')"></page-meta>
 
-  <view 
-    class="navbar" 
-    @touchmove.prevent
-    :style="{ paddingTop: safeAreaTop + 'px', 
-      position: 'fixed', top: 0, left: 0, right: 0, 
-      zIndex: 100, 
-      backgroundColor: '#fff' }"
-  >
+  <view class="navbar" @touchmove.prevent :style="{
+    paddingTop: safeAreaTop + 'px',
+    position: 'fixed', top: 0, left: 0, right: 0,
+    zIndex: 100,
+    backgroundColor: '#fff'
+  }">
     <view class="header">
-        <uni-icons type="refreshempty" color="#2979ff" size="30" @tap="query()"></uni-icons>
-        <view class="spacer"></view>
-        <view class="center-content" @tap="togglePicker">
-            <view class="week-info">
-                <text>{{ multiArray[0][multiIndex[0]] + ' ' + multiArray[1][multiIndex[1]] }}</text>
-            </view>
-            <uni-icons type="down" size="18" color="#2979ff"
-                :style="{ transform: isPickerOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s ease' }"></uni-icons>
+      <uni-icons type="refreshempty" color="#2979ff" size="30" @tap="query()"></uni-icons>
+      <view class="spacer"></view>
+      <view class="center-content" @tap="togglePicker">
+        <view class="week-info">
+          <text>{{ multiArray[0][multiIndex[0]] + ' ' + multiArray[1][multiIndex[1]] }}</text>
         </view>
-        <view class="spacer"></view>
-        <uni-icons type="refreshempty" size="30" style="visibility: hidden;"></uni-icons>
+        <uni-icons type="down" size="18" color="#2979ff"
+          :style="{ transform: isPickerOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s ease' }"></uni-icons>
+      </view>
+      <view class="spacer"></view>
+      <uni-icons type="refreshempty" size="30" style="visibility: hidden;"></uni-icons>
     </view>
   </view>
 
@@ -291,55 +289,45 @@ export default {
     :refresher-triggered="isTriggered" 
     :style="{ paddingTop: paddingTopStyle, height: '100vh' }"
   > -->
-    <view class="score-page" :style="{ paddingTop: paddingTopStyle }">
+  <view class="score-page" :style="{ paddingTop: paddingTopStyle }">
 
-      <view class="segmented-control-container">
-        <uni-segmented-control 
-          :values="['卡片', '列表']" 
-          :current="0"
-          @clickItem="segCtrlChange"
-        />
-      </view>
-
-      <view class="list">
-        <uni-transition 
-          :mode-class="['fade', 'slide-right']" 
-          :show="cardMode && gradeItem.list[0] != undefined"
-          v-if="cardMode"
-        >
-          <view style="margin-top: 30rpx;">
-            <GradeList v-for="(item, index) in gradeItem.list" :key="index" :kcmc="item.kcmc" :isNew="item.isNew"
-              :message="item.kcxzmc + ' · ' + item.xf + '学分 · ' + item.js + (item.khfs == null ? '' : (' · ' + item.khfs))"
-              :cj="item.cj" :jd="item.jd" @tap="toggle(index)" />
-          </view>
-          <Divider v-if="gradeItem.list[0] != undefined" text="暂无更多数据" />
-        </uni-transition>
-        <uni-transition 
-          :mode-class="['fade', 'slide-right']" 
-          :show="!cardMode && gradeItem.list[0] != undefined"
-          v-if="gradeItem.list[0] != undefined"
-        >
-          <view style="margin: 30rpx;">
-            <uni-table stripe emptyText="暂无数据">
-              <uni-tr>
-                <uni-th align="left" width="320rpx">课程名称</uni-th>
-                <uni-th align="center" width="100rpx">学分</uni-th>
-                <uni-th align="center" width="100rpx">成绩</uni-th>
-                <uni-th align="center" width="100rpx">绩点</uni-th>
-              </uni-tr>
-              <uni-tr v-for="(item, index) in gradeItem.list" :key="index" @tap="toggle(index)">
-                <uni-td align="left">{{ item.kcmc }}</uni-td>
-                <uni-td align="center">{{ item.xf }}</uni-td>
-                <uni-td align="center">{{ item.cj }}</uni-td>
-                <uni-td align="center">{{ item.jd }}</uni-td>
-              </uni-tr>
-            </uni-table>
-          </view>
-          <Divider v-if="gradeItem.list[0] != undefined" text="暂无更多数据" />
-        </uni-transition>
-      </view>
-
+    <view class="segmented-control-container">
+      <uni-segmented-control :values="['卡片', '列表']" :current="0" @clickItem="segCtrlChange" />
     </view>
+
+    <view class="list">
+      <uni-transition :mode-class="['fade', 'slide-right']" :show="cardMode && gradeItem.list[0] != undefined"
+        v-if="cardMode">
+        <view style="margin-top: 30rpx;">
+          <GradeList v-for="(item, index) in gradeItem.list" :key="index" :kcmc="item.kcmc" :isNew="item.isNew"
+            :message="item.kcxzmc + ' · ' + item.xf + '学分 · ' + item.js + (item.khfs == null ? '' : (' · ' + item.khfs))"
+            :cj="item.cj" :jd="item.jd" @tap="toggle(index)" />
+        </view>
+        <Divider v-if="gradeItem.list[0] != undefined" text="暂无更多数据" />
+      </uni-transition>
+      <uni-transition :mode-class="['fade', 'slide-right']" :show="!cardMode && gradeItem.list[0] != undefined"
+        v-if="gradeItem.list[0] != undefined">
+        <view style="margin: 30rpx;">
+          <uni-table stripe emptyText="暂无数据">
+            <uni-tr>
+              <uni-th align="left" width="320rpx">课程名称</uni-th>
+              <uni-th align="center" width="100rpx">学分</uni-th>
+              <uni-th align="center" width="100rpx">成绩</uni-th>
+              <uni-th align="center" width="100rpx">绩点</uni-th>
+            </uni-tr>
+            <uni-tr v-for="(item, index) in gradeItem.list" :key="index" @tap="toggle(index)">
+              <uni-td align="left">{{ item.kcmc }}</uni-td>
+              <uni-td align="center">{{ item.xf }}</uni-td>
+              <uni-td align="center">{{ item.cj }}</uni-td>
+              <uni-td align="center">{{ item.jd }}</uni-td>
+            </uni-tr>
+          </uni-table>
+        </view>
+        <Divider v-if="gradeItem.list[0] != undefined" text="暂无更多数据" />
+      </uni-transition>
+    </view>
+
+  </view>
   <!-- </scroll-view> -->
 
   <view>
@@ -350,11 +338,7 @@ export default {
   </view>
 
   <view>
-    <uni-popup 
-      ref="pickerPop" 
-      :safe-area="false" 
-      @change="pickerPopChange"
-    >
+    <uni-popup ref="pickerPop" :safe-area="false" @change="pickerPopChange">
       <view>
         <picker-view ref="pickerView" :immediate-change="true" :value="multiIndex" @pickend="pickend"
           @pickstart="pickstart" @change="bindChange" class="picker-view" indicator-style="height: 50px;">
@@ -372,43 +356,43 @@ export default {
     </uni-popup>
   </view>
 
-  <Statistic :gradeItem="gradeItem"/>
+  <Statistic :gradeItem="gradeItem" />
 
 </template>
 
 <style scoped lang="scss">
 .header {
-    height: 70rpx;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 20rpx;
-    font-size: 32rpx;
-    color: #333;
+  height: 70rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20rpx;
+  font-size: 32rpx;
+  color: #333;
 }
 
 .spacer {
-    flex: 1;
+  flex: 1;
 }
 
 .center-content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex: 1;
-    min-width: 200rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-width: 200rpx;
 }
 
 .week-info {
-    font-size: 32rpx;
-    display: flex;
-    align-items: center;
-    white-space: nowrap;
-    margin-right: 4rpx;
+  font-size: 32rpx;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  margin-right: 4rpx;
 }
 
 :deep(.uni-popup) {
-    z-index: 1000 !important;
+  z-index: 1000 !important;
 }
 
 .score-page {

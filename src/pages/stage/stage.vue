@@ -1,26 +1,17 @@
 <template>
   <!-- 正常内容区域 -->
-  <uni-transition
-    :show="stage.length > 0"
-    :mode-class="['fade', 'slide-right']"
-  >
+  <uni-transition :show="stage.length > 0" :mode-class="['fade', 'slide-right']">
     <view class="stage-list">
-      <uni-card 
-        v-for="(item, index) in reversedStage" 
-        :key="index"
-        :is-shadow="true"
-        :class="{ 'current-stage': item.xqm == courseStage.xqm && item.xnm == courseStage.xnm }"
-      >
+      <uni-card v-for="(item, index) in reversedStage" :key="index" :is-shadow="true"
+        :class="{ 'current-stage': item.xqm == courseStage.xqm && item.xnm == courseStage.xnm }">
         <view class="stage-card" @tap="handleStageTap(item)">
           <view class="stage-header">
             <text class="stage-title">{{ item.title }} {{ item.xqm == '3' ? '上' : '下' }}</text>
-            <text 
-              class="stage-tag" 
-              v-if="item.xqm == courseStage.xqm && item.xnm == courseStage.xnm">
+            <text class="stage-tag" v-if="item.xqm == courseStage.xqm && item.xnm == courseStage.xnm">
               当前学期
             </text>
           </view>
-          
+
           <view class="stage-info">
             <view class="info-item">
               <text class="info-label">{{ item.startTime }}&nbsp;-&nbsp;{{ item.endTime }}</text>
@@ -69,6 +60,7 @@ export default {
     },
     async getStage() {
       this.error = false
+      uni.showNavigationBarLoading()
       try {
         const res = await http({
           method: 'GET',
@@ -79,6 +71,7 @@ export default {
         this.error = true
       } finally {
         uni.stopPullDownRefresh()
+        uni.hideNavigationBarLoading()
       }
     },
     async update() {
@@ -153,7 +146,7 @@ export default {
   color: #fff;
   font-size: 32rpx;
   text-align: center;
-  
+
   &:active {
     opacity: 0.8;
   }
@@ -170,13 +163,13 @@ export default {
     align-items: center;
     margin-bottom: 20rpx;
     margin-top: 10rpx;
-    
+
     .stage-title {
       font-size: 32rpx;
       font-weight: bold;
       color: #333;
     }
-    
+
     .stage-tag {
       font-size: 24rpx;
       color: #007AFF;
@@ -185,21 +178,21 @@ export default {
       border-radius: 20rpx;
     }
   }
-  
+
   .stage-info {
     .info-item {
       display: flex;
       margin-bottom: 16rpx;
-      
+
       &:last-child {
         margin-bottom: 0;
       }
-      
+
       .info-label {
         font-size: 28rpx;
         color: #666;
       }
-      
+
       .info-value {
         font-size: 28rpx;
         color: #333;
@@ -218,11 +211,11 @@ export default {
 // 卡片间距
 :deep(.uni-card) {
   margin: 20rpx 0;
-  
+
   &:first-child {
     margin-top: 0;
   }
-  
+
   &:last-child {
     margin-bottom: 0;
   }
